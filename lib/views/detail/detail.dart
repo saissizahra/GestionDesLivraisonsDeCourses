@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_catmkadia/common/color_extension.dart';
-import 'package:flutter_application_catmkadia/models/product.dart';
-import 'package:flutter_application_catmkadia/views/cart/cart.dart';
-import 'package:flutter_application_catmkadia/views/detail/widget/addToCart.dart';
-import 'package:flutter_application_catmkadia/views/detail/widget/description.dart';
-import 'package:flutter_application_catmkadia/views/detail/widget/detailItems.dart';
-import 'package:flutter_application_catmkadia/views/detail/widget/DetailImages.dart';
+import 'package:mkadia/common/color_extension.dart';
+import 'package:mkadia/models/product.dart';
+import 'package:mkadia/views/cart/cart.dart';
+import 'package:mkadia/views/detail/widget/addToCart.dart';
+import 'package:mkadia/views/detail/widget/description.dart';
+import 'package:mkadia/views/detail/widget/detailItems.dart';
+import 'package:mkadia/views/detail/widget/DetailImages.dart';
 
 class Detail extends StatefulWidget {
   final Product product;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_catmkadia/common/color_extension.dart';
-import 'package:flutter_application_catmkadia/models/category.dart';
-import 'package:flutter_application_catmkadia/models/product.dart';
-import 'package:flutter_application_catmkadia/views/home/widget/AllProductsPage.dart';
-import 'package:flutter_application_catmkadia/views/home/widget/SearchLoc.dart';
-import 'package:flutter_application_catmkadia/views/home/widget/productCard.dart';
-import 'package:flutter_application_catmkadia/views/home/widget/promo.dart';
+import 'package:mkadia/common/color_extension.dart';
+import 'package:mkadia/models/category.dart';
+import 'package:mkadia/models/product.dart';
+import 'package:mkadia/views/home/widget/AllProductsPage.dart';
+import 'package:mkadia/views/home/widget/SearchLoc.dart';
+import 'package:mkadia/views/home/widget/productCard.dart';
+import 'package:mkadia/views/home/widget/promo.dart';
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 

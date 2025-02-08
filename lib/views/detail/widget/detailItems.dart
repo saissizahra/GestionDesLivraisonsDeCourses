@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_catmkadia/common/color_extension.dart';
-import 'package:flutter_application_catmkadia/models/product.dart';
+import 'package:mkadia/common/color_extension.dart';
+import 'package:mkadia/models/product.dart';
 
 class detailItems extends StatelessWidget {
   final Product product;

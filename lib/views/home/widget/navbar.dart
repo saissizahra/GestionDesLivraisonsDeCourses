@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_catmkadia/views/cart/cart.dart';
-import 'package:flutter_application_catmkadia/views/home/HomeView.dart';
-import 'package:flutter_application_catmkadia/views/profil/profil.dart';
+import 'package:mkadia/views/cart/cart.dart';
+import 'package:mkadia/views/home/HomeView.dart';
+import 'package:mkadia/views/profil/profil.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_catmkadia/models/product.dart';
-import 'package:flutter_application_catmkadia/views/home/widget/productCard.dart';
+import 'package:mkadia/models/product.dart';
+import 'package:mkadia/views/home/widget/productCard.dart';
 
 
 class Filter extends StatelessWidget {

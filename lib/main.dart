@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_catmkadia/provider/cartProvider.dart';
-import 'package:flutter_application_catmkadia/views/home/widget/navbar.dart';
+import 'package:mkadia/provider/cartProvider.dart';
+import 'package:mkadia/views/home/widget/navbar.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          fontFamily: 'Zabal', // Utilisation de la police personnalisée
+          fontFamily: 'Zabal', 
         ),
         home:  const BottomNavBar(),
       ),

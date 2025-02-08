@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_catmkadia/models/product.dart';
+import 'package:mkadia/models/product.dart';
 import 'package:provider/provider.dart';
 
 class CartProvider extends ChangeNotifier{
