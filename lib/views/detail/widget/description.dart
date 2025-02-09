@@ -10,22 +10,22 @@ class Description extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Product Description",
+          "Description",
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.black87, // Meilleur contraste
-            letterSpacing: 0.5, // Espacement pour plus d'élégance
+            color: Colors.black87, 
+            letterSpacing: 0.5, 
           ),
         ),
-        const SizedBox(height: 12), // Espacement plus équilibré
+        const SizedBox(height: 12), 
         Text(
           description,
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            color: Colors.black54, // Texte légèrement atténué
-            height: 1.5, // Meilleure lisibilité
+            color: Colors.black54, 
+            height: 1.5, 
           ),
         ),
       ],

@@ -2,77 +2,81 @@ import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
 import 'package:mkadia/models/product.dart';
 
-class detailItems extends StatelessWidget {
+class DetailItems extends StatelessWidget {
   final Product product;
-  const detailItems({super.key, required this.product});
+  const DetailItems({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          product.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 26,
-            color: Colors.black87, // Meilleur contraste
-            letterSpacing: 0.5, // Espacement pour plus d'élégance
-          ),
-        ),
-        const SizedBox(height: 8), // Espacement pour l'aération
+        const Padding(padding:  EdgeInsets.only(top:10)),
+        // Nom 
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "${product.price} MAD",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 22,
-                    color: Colors.black, // Meilleure lisibilité
-                  ),
-                ),
-                const SizedBox(height: 6), // Espacement ajusté
-                Container(
-                  width: 60,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: TColor.primary,
-                  ),
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.star,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        product.rate.toString(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            Text(
+              product.name,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 28, 
+                color: Colors.black87,
+                letterSpacing: 0.5,
+              ),
             ),
-            const Spacer(),
+            // Poids 
             Text(
               product.weight,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.w500,
-                color: Colors.black54, 
+                color: Colors.black54,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10), 
+        // Prix 
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "${product.price} MAD",
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 20, 
+                color: Colors.black,
+              ),
+            ),
+            // Rate
+            Container(
+              width: 70, 
+              height: 32, 
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20), 
+                color: TColor.primary,
+              ),
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 8), 
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.star,
+                    size: 18,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 6), 
+                  Text(
+                    product.rate.toString(),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 16, 
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

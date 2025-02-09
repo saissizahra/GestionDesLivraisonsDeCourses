@@ -17,14 +17,13 @@ class Detail extends StatefulWidget {
 
 class _DetailState extends State<Detail> {
   int currentImage = 0;
-  int currentSlide = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80), 
+        preferredSize: const Size.fromHeight(80),
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(25),
@@ -36,9 +35,9 @@ class _DetailState extends State<Detail> {
             elevation: 0,
             leading: IconButton(
               icon: const Icon(
-                Icons.arrow_back_ios, 
-                color: Colors.white, 
-                size: 28
+                Icons.arrow_back_ios,
+                color: Colors.white,
+                size: 28,
               ),
               onPressed: () => Navigator.pop(context),
             ),
@@ -51,53 +50,58 @@ class _DetailState extends State<Detail> {
               ),
             ),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 30),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Cart()),
-                  );
-                },
+              Padding(
+                padding: const EdgeInsets.only(right: 20), 
+                child: IconButton(
+                  icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 30),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Cart()),
+                    );
+                  },
+                ),
               ),
             ],
 
           ),
         ),
       ),
-      floatingActionButton: AddToCart(product: widget.product), // Le bouton flottant ici
+      floatingActionButton: AddToCart(product: widget.product),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            DetailImages(
-              image: widget.product.image,
-              onChange: (index) {
-                setState(() {
-                  currentImage = index;
-                });
-              },
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                5,
-                (index) => AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: currentImage == index ? 15 : 8,
-                  height: 8,
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: currentImage == index ? Colors.black : Colors.grey,
-                  ),
+      body: Column(
+        children: [
+          const SizedBox(height: 50),
+          DetailImages(
+            image: widget.product.image,
+            onChange: (index) {
+              setState(() {
+                currentImage = index;
+              });
+            },
+          ),
+          const SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              5,
+              (index) => AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: currentImage == index ? 15 : 8,
+                height: 8,
+                margin: const EdgeInsets.only(right: 3),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: currentImage == index ? Colors.black : Colors.transparent,
+                  border: Border.all(color: Colors.black),
                 ),
               ),
             ),
-            const SizedBox(height: 10),
-            Container(
+          ),
+          
+          const SizedBox(height: 30),
+          Expanded(
+            child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -118,14 +122,26 @@ class _DetailState extends State<Detail> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  detailItems(product: widget.product),
+                  DetailItems(product: widget.product),
                   const SizedBox(height: 20),
-                  Description(description: widget.product.description),
+                  Divider(
+                    thickness: 1, 
+                    color: Colors.grey[300], 
+                    indent: 10,
+                    endIndent: 10, 
+                  ),
+                  const SizedBox(height: 20),
+
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Description(description: widget.product.description),
+                    ),
+                  ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

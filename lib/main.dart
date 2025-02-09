@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mkadia/login/home.dart';
 import 'package:mkadia/provider/cartProvider.dart';
-import 'package:mkadia/views/home/widget/navbar.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -14,10 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) =>
    MultiProvider(
       providers:  [
-        // Ajoute ici les providers si nécessaire
         ChangeNotifierProvider(
           create: (_)=> CartProvider(),
-
         )
       ],
       child: MaterialApp(
@@ -25,7 +23,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           fontFamily: 'Zabal', 
         ),
-        home:  const BottomNavBar(),
+        home:  const HomeScreen(),
       ),
     );
 

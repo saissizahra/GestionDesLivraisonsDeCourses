@@ -36,6 +36,7 @@ class _HomeViewState extends State<HomeView> {
                   bottomRight: Radius.circular(25),
                 ),
                 child: AppBar(
+                  automaticallyImplyLeading: false,
                   backgroundColor: TColor.primaryText,
                   elevation: 0,
                   toolbarHeight: 160,
