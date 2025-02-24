@@ -17,13 +17,13 @@ class _CartState extends State<Cart> {
     final provider = CartProvider.of(context);
     final finalList = provider.cart;
 
-    productQuantity(IconData icon, int index) {
+    productQuantity(IconData icon, String productId) {
       return GestureDetector(
         onTap: () {
           setState(() {
             icon == Icons.add
-                ? provider.incrementQtn(index)
-                : provider.decrementQtn(index);
+                ? provider.incrementQtn(productId)
+                : provider.decrementQtn(productId);
           });
         },
         child: Icon(icon, size: 20),
@@ -49,7 +49,7 @@ class _CartState extends State<Cart> {
                 size: 28,
               ),
               onPressed: () {
-                 Navigator.pop(context);
+                Navigator.pop(context);
               },
             ),
             title: Text(
@@ -77,26 +77,37 @@ class _CartState extends State<Cart> {
                   ),
                   const SizedBox(height: 20),
                   const Column(
-                  children: [
-                    Text(
-                      "Your Cart is Empty",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black54,
+                    children: [
+                      Text(
+                        "Your Cart is empty",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54,
+                          letterSpacing: 1,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "Add items to pass the checkout",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey,
+                      SizedBox(height: 20,),
+                      Text(
+                        "Today is good day for you ",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                          letterSpacing: 0.5,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-
+                      Text(
+                        "to make a choice ",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             )
@@ -173,8 +184,7 @@ class _CartState extends State<Cart> {
                               children: [
                                 IconButton(
                                   onPressed: () {
-                                    finalList.removeAt(index);
-                                    setState(() {});
+                                    provider.removeProduct(cartItems.id);
                                   },
                                   icon: const Icon(
                                     Icons.delete,
@@ -196,7 +206,7 @@ class _CartState extends State<Cart> {
                                   child: Row(
                                     children: [
                                       const SizedBox(width: 10),
-                                      productQuantity(Icons.add, index),
+                                      productQuantity(Icons.add, cartItems.id),
                                       const SizedBox(width: 10),
                                       Text(
                                         cartItems.quantity.toString(),
@@ -206,7 +216,7 @@ class _CartState extends State<Cart> {
                                         ),
                                       ),
                                       const SizedBox(width: 10),
-                                      productQuantity(Icons.remove, index),
+                                      productQuantity(Icons.remove, cartItems.id),
                                       const SizedBox(width: 10),
                                     ],
                                   ),

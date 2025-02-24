@@ -37,7 +37,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
                 child: AppBar(
                   automaticallyImplyLeading: false,
-                  backgroundColor: TColor.primaryText,
+                  backgroundColor: TColor.primaryColor,
                   elevation: 0,
                   toolbarHeight: 160,
                   title: const SearchLoc(),
