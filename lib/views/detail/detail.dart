@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
 import 'package:mkadia/models/product.dart';
+import 'package:mkadia/provider/cartProvider.dart';
 import 'package:mkadia/views/cart/cart.dart';
 import 'package:mkadia/views/detail/widget/addToCart.dart';
 import 'package:mkadia/views/detail/widget/description.dart';
@@ -20,6 +21,8 @@ class _DetailState extends State<Detail> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = CartProvider.of(context);
+    final finalList = provider.cart;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -53,7 +56,35 @@ class _DetailState extends State<Detail> {
               Padding(
                 padding: const EdgeInsets.only(right: 20), 
                 child: IconButton(
-                  icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 30),
+                  icon: Stack(
+                    children: [
+                      const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 38),
+                      if (finalList.isNotEmpty)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(0.25),
+                            decoration: BoxDecoration(
+                              color: Colors.orange,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 15,
+                              minHeight: 15,
+                            ),
+                            child: Text(
+                              finalList.length.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                   onPressed: () {
                     Navigator.push(
                       context,

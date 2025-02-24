@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
 import 'package:mkadia/provider/cartProvider.dart';
+import 'package:mkadia/views/ConfirmationOrder/OrderConfirmationPage.dart';
+import 'package:mkadia/views/cart/confirmationpayement.dart';
+import 'package:mkadia/views/home/widget/navbar.dart';
 
 class CheckoutBox extends StatelessWidget {
   const CheckoutBox({super.key});
@@ -107,7 +110,14 @@ class CheckoutBox extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CheckoutPage(),
+                ),
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: TColor.primaryText, 
               minimumSize: const Size(double.infinity, 55),
