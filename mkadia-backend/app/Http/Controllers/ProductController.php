@@ -13,7 +13,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
+        $products = Product::with('category')->get();
         return response()->json([
             'status' => true,
             'products' => $products
@@ -62,7 +62,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::find($id);
+        $product = Product::with('category')->find($id);
         if ($product) {
             return response()->json(['status' => true, 'product' => $product]);
         } else {

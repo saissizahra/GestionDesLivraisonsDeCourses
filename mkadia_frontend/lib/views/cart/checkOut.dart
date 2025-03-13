@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
 import 'package:mkadia/provider/cartProvider.dart';
-import 'package:mkadia/views/ConfirmationOrder/OrderConfirmationPage.dart';
 import 'package:mkadia/views/cart/checkoutPage.dart';
-import 'package:mkadia/views/home/widget/navbar.dart';
 
 class CheckoutBox extends StatelessWidget {
   const CheckoutBox({super.key});
@@ -13,7 +11,7 @@ class CheckoutBox extends StatelessWidget {
     final provider = CartProvider.of(context);
 
     return Container(
-      height: 300,
+      height: 250, // Ajuste la hauteur après suppression des éléments
       width: double.infinity,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -34,37 +32,6 @@ class CheckoutBox extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 5,
-                horizontal: 15,
-              ),
-              filled: true,
-              fillColor: Colors.grey.shade200,
-              hintText: "Enter Discount Code",
-              hintStyle: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey,
-              ),
-              suffixIcon: TextButton(
-                onPressed: () {},
-                child: Text(
-                  "Apply",
-                  style: TextStyle(
-                    color: TColor.primaryText, 
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

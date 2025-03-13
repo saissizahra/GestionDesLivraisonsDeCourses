@@ -135,7 +135,7 @@ class _CartState extends State<Cart> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            cartItems['name'],
+                                            cartItems['name'] ?? 'Nom non disponible',
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.black,
@@ -143,7 +143,9 @@ class _CartState extends State<Cart> {
                                           ),
                                           const SizedBox(height: 5),
                                           Text(
-                                            cartItems['category'],
+                                            (cartItems['category'] != null && cartItems['category'] is Map) 
+                                                ? cartItems['category']['name'] ?? 'Non catégorisé'
+                                                : 'Non catégorisé',
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 14,

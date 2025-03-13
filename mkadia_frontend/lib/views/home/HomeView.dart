@@ -16,8 +16,10 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   int currentSlider = 0;
   int selectedIndex = 0;
+
   List<dynamic> products = [];
   List<dynamic> categories = [];
+  List<dynamic> promotions = [];
 
   @override
   void initState() {
@@ -29,9 +31,11 @@ Future<void> fetchData() async {
     try {
       final productsData = await ApiService.fetchProducts();
       final categoriesData = await ApiService.fetchCategories();
+      final promotionsData = await ApiService.fetchPromotions();
       setState(() {
         products = productsData;
         categories = categoriesData;
+        promotions = promotionsData;
       });
     } catch (e) {
       print('Error fetching data: $e');
@@ -137,13 +141,15 @@ Future<void> fetchData() async {
 
                   const SizedBox(height: 20),
 
-                  promo(
+
+                  Promo(
                     currentSlide: currentSlider,
                     onChange: (value) {
                       setState(() {
                         currentSlider = value;
                       });
                     },
+                    promotions: promotions, 
                   ),
 
                   const SizedBox(height: 20),

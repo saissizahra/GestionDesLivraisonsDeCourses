@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PromotionController;
+
 
 
 /*
@@ -37,3 +39,8 @@ Route::get('/orders/{id}', [OrderController::class, 'show']);
 Route::post('/orders/{order}/update-status', [OrderController::class, 'updateStatus']);
 Route::put('/orders/{id}', [OrderController::class, 'update']); 
 Route::delete('/orders/{id}', [OrderController::class, 'destroy']); 
+
+// Routes pour les promotions
+Route::get('/promotions', [PromotionController::class, 'index']);
+Route::post('/promotions/verify', [PromotionController::class, 'verifyCode']);
+Route::post('/promotions/apply', [PromotionController::class, 'applyCode']);

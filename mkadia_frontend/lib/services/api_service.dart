@@ -84,4 +84,46 @@ class ApiService {
       throw Exception('Failed to load product');
     }
   }
+
+    // Récupérer toutes les promotions actives
+  static Future<List<dynamic>> fetchPromotions() async {
+    final response = await http.get(Uri.parse('$baseUrl/promotions'));
+    
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load promotions');
+    }
+  }
+
+  // Vérifier la validité d'un code promotionnel
+  static Future<Map<String, dynamic>> verifyPromoCode(String code) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/promotions/verify'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, String>{
+        'code': code,
+      }),
+    );
+
+    return jsonDecode(response.body);
+  }
+
+  // Appliquer un code promotionnel à une commande
+  static Future<Map<String, dynamic>> applyPromoCode(String code, double cartTotal) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/promotions/apply'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'code': code,
+        'cart_total': cartTotal,
+      }),
+    );
+
+    return jsonDecode(response.body);
+  }
 }
