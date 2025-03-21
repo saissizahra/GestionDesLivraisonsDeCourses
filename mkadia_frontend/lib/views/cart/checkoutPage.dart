@@ -25,8 +25,7 @@ class CheckoutPage extends StatelessWidget {
 
   void _placeOrder(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    cartProvider.confirmOrder(); // Confirmer la commande via l'API
-
+    
     // Naviguer vers la page de confirmation
     Navigator.pushReplacement(
       context,

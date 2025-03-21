@@ -17,8 +17,13 @@ class OrderConfirmationPage extends StatelessWidget {
     final orderProvider = Provider.of<OrderProvider>(context);
     final order = orderProvider.currentOrder;
 
+    // Déterminer quels articles afficher (cart ou confirmedItems)
+    final itemsToDisplay = cartProvider.cart.isEmpty && cartProvider.isOrderConfirmed 
+        ? cartProvider.confirmedItems 
+        : cartProvider.cart;
+
     // Si aucune commande n'existe
-    if (order == null || cartProvider.confirmedItems.isEmpty) {
+    if (order == null && itemsToDisplay.isEmpty) {
       return Scaffold(
         backgroundColor: Colors.white, 
         appBar: PreferredSize(
@@ -70,14 +75,16 @@ class OrderConfirmationPage extends StatelessWidget {
 
     // *Si une commande existe
     
+    // Calculer le total basé sur les articles affichés
     final double totalProducts = double.parse(
-      (order.items.fold(0.0, (sum, item) => sum + (item.price * item.quantity))).toStringAsFixed(2)
+      (itemsToDisplay.fold(0.0, (sum, item) => sum + (double.parse(item['price'].toString()) * item['quantity']))).toStringAsFixed(2)
     );    
     final double tax = double.parse(
       (totalProducts * 0.1).toStringAsFixed(2)
     ); 
     final double deliveryFee = 10; 
     final double totalAmount = double.parse((totalProducts + tax + deliveryFee).toStringAsFixed(2));
+    
     return Scaffold(
       backgroundColor: Colors.white, 
       appBar: PreferredSize(
@@ -108,10 +115,9 @@ class OrderConfirmationPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DeliveryDetailsCard(order: order),
             const PaymentMethodCard(),
-            OrderSummaryCard(order: order),
-            PaymentDetailsCard(
+            OrderSummaryCard(items: itemsToDisplay),
+            PaymentDetailsCard(  
               totalProducts: totalProducts,
               tax: tax,
               deliveryFee: deliveryFee,

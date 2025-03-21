@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('total_amount', 8, 2);
             $table->dateTime('order_date');
             $table->foreignId('delivery_id')->nullable()->constrained()->onDelete('set null');
-            $table->enum('order_status', ['pending', 'processing', 'completed', 'canceled'])->default('pending');
+            $table->enum('order_status', ['pending', 'processing', 'completed', 'confirmed'])->default('pending');
             $table->timestamps();
         });
     }

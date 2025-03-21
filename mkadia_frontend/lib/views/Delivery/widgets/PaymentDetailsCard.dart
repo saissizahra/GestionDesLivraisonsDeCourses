@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
-import 'package:mkadia/models/order.dart';
+import 'package:mkadia/views/ReviewPage.dart';
+import 'package:provider/provider.dart';
 import 'package:mkadia/provider/cartProvider.dart';
-import 'package:mkadia/views/cart/cart.dart'; // Assurez-vous d'importer le modèle Order
 
 class PaymentDetailsCard extends StatelessWidget {
   final double totalProducts;
   final double tax;
   final double deliveryFee;
   final double totalAmount;
-  final Order order; // Ajoutez ce paramètre
 
   const PaymentDetailsCard({
     super.key,
@@ -17,11 +16,14 @@ class PaymentDetailsCard extends StatelessWidget {
     required this.tax,
     required this.deliveryFee,
     required this.totalAmount,
-    required this.order, // Initialisez ce paramètre
   });
 
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context);
+    // Pour l'ordre, nous utilisons la dernière réponse d'ordre si disponible
+    final lastOrder = cartProvider.lastOrderResponse;
+    
     return Container(
       height: 260,
       width: double.infinity,
@@ -34,7 +36,6 @@ class PaymentDetailsCard extends StatelessWidget {
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 15),
-          // Montant des produits
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -142,7 +143,40 @@ class PaymentDetailsCard extends StatelessWidget {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              // Naviguer vers la page de review
+              // Créer un objet ordre basé sur l'état actuel
+              final orderData = {
+                'id': lastOrder != null ? lastOrder['order_id'] : DateTime.now().millisecondsSinceEpoch.toString(),
+                'user_id': 1, // Remplacer par l'ID réel de l'utilisateur
+                'total_amount': totalAmount,
+                'items': cartProvider.isOrderConfirmed 
+                    ? cartProvider.confirmedItems.map((item) => {
+                        'product_id': item['id'],
+                        'quantity': item['quantity'],
+                        'price': item['price'],
+                        'product': {
+                          'id': item['id'],
+                          'name': item['name'],
+                          'image_url': item['image'] ?? null
+                        }
+                      }).toList()
+                    : cartProvider.cart.map((item) => {
+                        'product_id': item['id'],
+                        'quantity': item['quantity'],
+                        'price': item['price'],
+                        'product': {
+                          'id': item['id'],
+                          'name': item['name'],
+                          'image_url': item['image'] ?? null
+                        }
+                      }).toList(),
+              };
+              
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReviewPage(order: orderData),
+                ),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: TColor.primaryText,

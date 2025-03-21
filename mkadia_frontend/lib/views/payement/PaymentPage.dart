@@ -1,24 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:mkadia/common/color_extension.dart';
+import 'package:mkadia/provider/OrderProvider.dart';
 import 'package:mkadia/provider/PayementManager.dart';
+import 'package:mkadia/provider/cartProvider.dart';
+import 'package:mkadia/views/ConfirmationOrder/Widgets/OrderSummaryCard.dart';
+import 'package:mkadia/views/ConfirmationOrder/Widgets/PaymentDetailsCard.dart';
+import 'package:mkadia/views/payement/widgets/ZPaymentDetailsCard.dart';
+import 'package:provider/provider.dart';
+import 'package:mkadia/models/order.dart';
+
 
 class PaymentPage extends StatelessWidget {
   final PaymentManager paymentManager;
-
-  const PaymentPage({super.key, required this.paymentManager});
+  final CartProvider cartProvider;
+  
+  const PaymentPage({super.key, required this.paymentManager, required this.cartProvider});
 
   @override
   Widget build(BuildContext context) {
+
+    Provider.of<CartProvider>(context);
+    final orderProvider = Provider.of<OrderProvider>(context);
+    final order = orderProvider.currentOrder;
+
+    if (order == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Paiement'),
+          backgroundColor: Colors.green,
+          elevation: 0,
+        ),
+        body: const Center(
+          child: Text('Aucune commande trouvée'),
+        ),
+      );
+    }
+
+
+    final double totalProducts = double.parse(
+      (order.items.fold(0.0, (sum, item) => sum + (item.price * item.quantity))).toStringAsFixed(2)
+    );    
+    final double tax = double.parse(
+      (totalProducts * 0.1).toStringAsFixed(2)
+    ); 
+    final double deliveryFee = 10; 
+    final double totalAmount = double.parse((totalProducts + tax + deliveryFee).toStringAsFixed(2));
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Paiement'),
-        backgroundColor: Colors.green,
-        elevation: 0,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(25),
+            bottomRight: Radius.circular(25),
+          ),
+          child: AppBar(
+            toolbarHeight: 80,
+            backgroundColor: TColor.primaryText,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+                size: 28,
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              "Paiement",
+              style: TextStyle(
+                color: TColor.primary,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          
           children: [
+            OrderSummaryCard(items: cartProvider.cart),
             Text(
               'Adresse de Livraison',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
@@ -34,13 +99,16 @@ class PaymentPage extends StatelessWidget {
                 ),
               ),
             ),
+            
             const Divider(),
+
             const SizedBox(height: 16),
 
             Text(
               'Méthode de Paiement',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[700]),
             ),
+
             const SizedBox(height: 8),
 
             Card(
@@ -50,7 +118,7 @@ class PaymentPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Sélectionnez une méthode de paiement:',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
@@ -74,6 +142,7 @@ class PaymentPage extends StatelessWidget {
                 ),
               ),
             ),
+
             const SizedBox(height: 16),
 
             if (paymentManager.selectedPaymentMethod == 'Carte de Crédit') ...[
@@ -88,24 +157,12 @@ class PaymentPage extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Bouton aligné à droite
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    paymentManager.savePaymentInfo(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text('Confirmer et Payer', style: TextStyle(color: Colors.white, fontSize: 16)),
-                ),
-              ],
+            ZPaymentDetailsCard(
+              totalProducts: totalProducts,
+              tax: tax,
+              deliveryFee: deliveryFee,
+              totalAmount: totalAmount,
+              paymentManager: paymentManager,
             ),
           ],
         ),

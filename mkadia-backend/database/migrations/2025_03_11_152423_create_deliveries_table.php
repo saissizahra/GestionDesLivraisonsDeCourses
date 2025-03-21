@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->nullable();  // Ne pas encore ajouter la clé étrangère ici
+            $table->foreignId('order_id')->nullable()->onDelete('cascade');  // Ne pas encore ajouter la clé étrangère ici
             $table->string('delivery_address');
             $table->timestamps();
         });

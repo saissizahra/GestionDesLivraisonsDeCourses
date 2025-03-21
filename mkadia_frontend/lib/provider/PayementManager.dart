@@ -84,4 +84,13 @@ class PaymentManager extends ChangeNotifier {
       SnackBar(content: Text('Informations de paiement sauvegardées avec succès!')),
     );
   }
+
+  double _deliveryFee = 10; // Frais de livraison par défaut
+
+  double get deliveryFee => _deliveryFee;
+
+  void updateDeliveryFee(double newFee) {
+    _deliveryFee = newFee;
+    notifyListeners();
+  }
 }

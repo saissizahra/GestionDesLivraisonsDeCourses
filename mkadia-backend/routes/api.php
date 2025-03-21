@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\ReviewController;
 
 
 
@@ -34,13 +35,16 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 // Routes pour les catégories
 Route::get('/categories', [CategoryController::class, 'index']);
 
-Route::get('/orders', [OrderController::class, 'index']);
-Route::get('/orders/{id}', [OrderController::class, 'show']);
-Route::post('/orders/{order}/update-status', [OrderController::class, 'updateStatus']);
-Route::put('/orders/{id}', [OrderController::class, 'update']); 
-Route::delete('/orders/{id}', [OrderController::class, 'destroy']); 
+Route::post('/orders', [OrderController::class, 'store']); 
+Route::post('/orders/confirm', [OrderController::class, 'confirmOrder']);
 
 // Routes pour les promotions
 Route::get('/promotions', [PromotionController::class, 'index']);
 Route::post('/promotions/verify', [PromotionController::class, 'verifyCode']);
 Route::post('/promotions/apply', [PromotionController::class, 'applyCode']);
+
+// Routes pour les évaluations
+Route::post('reviews', [ReviewController::class, 'store']);
+Route::get('reviews/{id}', [ReviewController::class, 'show']);
+Route::get('products/{productId}/reviews', [ReviewController::class, 'getProductReviews']);
+Route::get('users/{userId}/reviews', [ReviewController::class, 'getUserReviews']);

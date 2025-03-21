@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
-import 'package:mkadia/models/product.dart';
 import 'package:mkadia/provider/cartProvider.dart';
 import 'package:mkadia/views/cart/cart.dart';
 import 'package:mkadia/views/home/searchPage.dart';
-import 'package:provider/provider.dart';
 
 class SearchLoc extends StatelessWidget {
   const SearchLoc({super.key});

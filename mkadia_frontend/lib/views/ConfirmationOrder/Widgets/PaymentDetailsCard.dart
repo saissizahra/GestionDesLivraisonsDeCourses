@@ -7,6 +7,8 @@ class PaymentDetailsCard extends StatelessWidget {
   final double tax;
   final double deliveryFee;
   final double totalAmount;
+  
+  
 
   const PaymentDetailsCard({
     super.key,

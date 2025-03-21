@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/views/ConfirmationOrder/OrderConfirmationPage.dart';
 import 'package:provider/provider.dart';
-import 'package:mkadia/provider/cartProvider.dart'; // Importez CartProvider
+import 'package:mkadia/provider/cartProvider.dart';
 
 class DeliveryPage extends StatelessWidget {
   const DeliveryPage({super.key});
@@ -10,12 +10,12 @@ class DeliveryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
 
-    // Si la commande est confirmée, afficher OrderConfirmationPage
-    if (cartProvider.isOrderConfirmed) {
+    // Si la commande est confirmée ou s'il y a des produits confirmés, afficher OrderConfirmationPage
+    if (cartProvider.isOrderConfirmed || cartProvider.confirmedItems.isNotEmpty) {
       return const OrderConfirmationPage();
     }
 
-    // Sinon, afficher la page de livraison
+    // Sinon, afficher la page de livraison vide
     return Scaffold(
       appBar: AppBar(
         title: const Text('Delivery'),
@@ -35,19 +35,17 @@ class DeliveryPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   const Column(
-                  children: [
-                    
-                    Text(
-                      "Vous n\'avez pas encore passé de commande.",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey,
+                    children: [
+                      Text(
+                        "Vous n\'avez pas encore passé de commande.",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-
+                    ],
+                  ),
                 ],
               ),
             ),

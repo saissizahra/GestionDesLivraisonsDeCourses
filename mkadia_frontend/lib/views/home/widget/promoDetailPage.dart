@@ -144,7 +144,7 @@ class PromoDetailsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(25),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -153,30 +153,30 @@ class PromoDetailsPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15), 
                     child: Image.network(
                       promotion['image_url'],
-                      height: 200,
+                      height: 150,
                       fit: BoxFit.cover, 
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 25),
 
                   Text(
                     promotion['title'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black87,
+                      color: TColor.primaryColor,
                     ),
                   ),
                   
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 8),
                   
                   // Description
                   if (promotion['description'] != null)
                     Text(
                       promotion['description'],
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: Colors.black54,
                       ),
@@ -198,7 +198,7 @@ class PromoDetailsPage extends StatelessWidget {
                           const Text(
                             'Détails de l\'offre',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 17,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -209,7 +209,7 @@ class PromoDetailsPage extends StatelessWidget {
                           ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: const Icon(Icons.discount, color: Colors.amber),
-                            title: Text(discountText),
+                            title: Text(discountText,style: const TextStyle(fontSize: 15),),
                           ),
                           
                           // Montant minimum d'achat
@@ -217,21 +217,21 @@ class PromoDetailsPage extends StatelessWidget {
                             ListTile(
                               contentPadding: EdgeInsets.zero,
                               leading: const Icon(Icons.shopping_cart, color: Colors.amber),
-                              title: Text('Achat minimum: $minPurchaseAmount DH'),
+                              title: Text('Achat minimum: $minPurchaseAmount DH',style: const TextStyle(fontSize: 15),),
                             ),
                           
                           // Période de validité
                           ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: const Icon(Icons.date_range, color: Colors.amber),
-                            title: Text('Valable du $formattedStartDate au $formattedEndDate'),
+                            title: Text('Valable du $formattedStartDate au $formattedEndDate',style: const TextStyle(fontSize: 15),),
                           ),
                         ],
                       ),
                     ),
                   ),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 15),
                   
                   // Code promo
                   Center(
@@ -240,16 +240,16 @@ class PromoDetailsPage extends StatelessWidget {
                         Text(
                           'Code Promo',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 17,
                             color: TColor.primaryText,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 5),
                         
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal:14, vertical: 10),
+                          padding: const EdgeInsets.symmetric(horizontal:14, vertical: 5),
                           decoration: BoxDecoration(
                             color: Colors.grey[200],
                             borderRadius: BorderRadius.circular(8),
@@ -261,13 +261,13 @@ class PromoDetailsPage extends StatelessWidget {
                               Text(
                                 promotion['code'],
                                 style: const TextStyle(
-                                  fontSize: 22,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: 1.5,
                                 ),
                               ),
                               
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 8),
                               
                               IconButton(
                                 icon: const Icon(Icons.copy),
@@ -287,8 +287,6 @@ class PromoDetailsPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
-                  
                 ],
               ),
             ),

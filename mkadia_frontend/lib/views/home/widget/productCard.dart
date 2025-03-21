@@ -45,8 +45,8 @@ class ProductCard extends StatelessWidget {
                 Center(
                   child: Image.network(
                     product['image_url'], 
-                    width: 110,
-                    height: 110,
+                    width: 108,
+                    height: 108,
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -73,12 +73,12 @@ class ProductCard extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: "ZabalDemo",
                     fontWeight: FontWeight.bold,
-                    fontSize: 20,
+                    fontSize: 18,
                     color: TColor.primaryText,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
               ],
             ),
           ),

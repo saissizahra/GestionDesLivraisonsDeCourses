@@ -17,7 +17,7 @@ class _AddToCartState extends State<AddToCart> {
   Widget build(BuildContext context) {
     final provider = CartProvider.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Stack(
         children: [
           // fond transparent 
@@ -40,7 +40,7 @@ class _AddToCartState extends State<AddToCart> {
           // Contenu du bouton AddToCart
           Container(
             height: 80,
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             alignment: Alignment.center,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
