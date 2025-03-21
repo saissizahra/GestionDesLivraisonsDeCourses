@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
 import 'package:mkadia/provider/cartProvider.dart';
@@ -48,8 +50,7 @@ class _ReviewPageState extends State<ReviewPage> {
       final reviewData = {
         'order_id': widget.order['id'].toString(),
         'user_id': 1, // Remplacer par l'ID de l'utilisateur actuel si disponible
-        'service_rating': _serviceRating,
-        'delivery_rating': _deliveryRating,
+        'delivery_rating': _deliveryRating, // Supprimez `service_rating`
         'comment': _commentController.text,
         'product_reviews': _productRatings.entries.map((entry) => {
           'product_id': entry.key,
@@ -109,8 +110,8 @@ class _ReviewPageState extends State<ReviewPage> {
       );
     }
   }
-
-  @override
+  
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,

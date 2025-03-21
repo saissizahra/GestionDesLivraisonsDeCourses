@@ -12,11 +12,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('product_reviews', function (Blueprint $table) {
-            $table->id(); // Clé primaire auto-incrémentée
-            $table->foreignId('review_id')->constrained()->onDelete('cascade'); // Clé étrangère vers la table `reviews`
-            $table->foreignId('product_id')->constrained()->onDelete('cascade'); // Clé étrangère vers la table `products`
-            $table->tinyInteger('rating')->unsigned(); // Note de 1 à 5 pour le produit
-            $table->timestamps(); // Colonnes `created_at` et `updated_at`
+            $table->id(); 
+            $table->foreignId('review_id')->constrained()->onDelete('cascade'); 
+            $table->foreignId('product_id')->constrained()->onDelete('cascade'); 
+            $table->tinyInteger('rating')->unsigned(); 
+            $table->timestamps();
         });
     }
 

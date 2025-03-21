@@ -18,14 +18,13 @@ class ReviewController extends Controller
         $validator = Validator::make($request->all(), [
             'order_id' => 'required|exists:orders,id',
             'user_id' => 'required|exists:users,id',
-            'service_rating' => 'required|integer|min:1|max:5',
-            'delivery_rating' => 'required|integer|min:1|max:5',
+            'delivery_rating' => 'required|integer|min:1|max:5', // Supprimez `service_rating`
             'comment' => 'nullable|string',
             'product_reviews' => 'required|array',
             'product_reviews.*.product_id' => 'required|exists:products,id',
             'product_reviews.*.rating' => 'required|integer|min:1|max:5',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
@@ -33,17 +32,16 @@ class ReviewController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-
+    
         try {
             // Créer l'évaluation générale
             $review = Review::create([
                 'order_id' => $request->order_id,
                 'user_id' => $request->user_id,
-                'service_rating' => $request->service_rating,
-                'delivery_rating' => $request->delivery_rating,
+                'delivery_rating' => $request->delivery_rating, // Supprimez `service_rating`
                 'comment' => $request->comment,
             ]);
-
+    
             // Créer les évaluations de produits
             foreach ($request->product_reviews as $productReview) {
                 if ($productReview['rating'] > 0) {
@@ -54,10 +52,10 @@ class ReviewController extends Controller
                     ]);
                 }
             }
-
+    
             // Mettre à jour les notes moyennes des produits
             $this->updateProductRatings();
-
+    
             return response()->json([
                 'status' => true,
                 'message' => 'Review submitted successfully',
