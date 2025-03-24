@@ -1,31 +1,36 @@
-import 'package:mkadia/models/delivery.dart';
+import 'package:mkadia/models/OrderItem.dart';
 
 class Order {
-  final String id;
-  final List<OrderItem> items; // Attend une liste d'objets OrderItem
+  final int id;
+  final int userId;
   final double totalAmount;
   final DateTime orderDate;
-  final Delivery delivery;
+  final int? deliveryId;
+  final String orderStatus;
+  final List<OrderItem> items;
 
   Order({
     required this.id,
-    required this.items,
+    required this.userId,
     required this.totalAmount,
     required this.orderDate,
-    required this.delivery,
+    this.deliveryId,
+    required this.orderStatus,
+    required this.items,
   });
-}
 
-class OrderItem {
-  final String productId;
-  final String name;
-  final double price;
-  final int quantity;
-
-  OrderItem({
-    required this.productId,
-    required this.name,
-    required this.price,
-    required this.quantity,
-  });
+  // Méthode pour créer un Order à partir de JSON
+  factory Order.fromJson(Map<String, dynamic> json) {
+    return Order(
+      id: json['id'],
+      userId: json['user_id'],
+      totalAmount: double.parse(json['total_amount'].toString()),
+      orderDate: DateTime.parse(json['order_date']),
+      deliveryId: json['delivery_id'],
+      orderStatus: json['order_status'],
+      items: (json['items'] as List<dynamic>)
+          .map((item) => OrderItem.fromJson(item))
+          .toList(),
+    );
+  }
 }

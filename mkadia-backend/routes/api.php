@@ -7,7 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ReviewController;
-
+use App\Http\Controllers\DeliveryController;
 
 
 /*
@@ -48,3 +48,6 @@ Route::post('reviews', [ReviewController::class, 'store']);
 Route::get('reviews/{id}', [ReviewController::class, 'show']);
 Route::get('products/{productId}/reviews', [ReviewController::class, 'getProductReviews']);
 Route::get('users/{userId}/reviews', [ReviewController::class, 'getUserReviews']);
+
+Route::post('/deliveries', [DeliveryController::class, 'store']);
+Route::put('/deliveries/{id}/status', [DeliveryController::class, 'updateStatus']);

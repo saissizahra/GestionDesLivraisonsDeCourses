@@ -7,10 +7,18 @@ class OrderSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Debug the items we're getting
+    print('OrderSummaryCard items: $items');
+    
     // Afficher un message si aucun article n'est disponible
     if (items.isEmpty) {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -20,9 +28,12 @@ class OrderSummaryCard extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Center(
-              child: Text(
-                'Aucun produit dans la commande',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Text(
+                  'Aucun produit dans la commande',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
               ),
             ),
           ],
@@ -41,44 +52,56 @@ class OrderSummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           SizedBox(
-            height: 130, 
+            height: 150, 
             child: ListView(
               scrollDirection: Axis.horizontal, 
-              children: items.map((item) => Container(
-                width: 100, 
-                padding: const EdgeInsets.all(8),
+              children: items.map((item) {
+                // Get image URL from multiple possible fields
+                final imageUrl = item['image_url'] ?? item['image'] ?? 
+                  'https://via.placeholder.com/60?text=No+Image';
                 
-                child: Column(
-                  children: [
-                    Image.network( 
-                      item['image_url'], 
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      item['name'] ?? 'Nom non disponible',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                return Container(
+                  width: 100, 
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    children: [
+                      Image.network( 
+                        imageUrl,
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) => 
+                          Container(
+                            width: 60,
+                            height: 60,
+                            color: Colors.grey.shade300,
+                            child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                          ),
                       ),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${item['price']} MAD x ${item['quantity']}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
+                      const SizedBox(height: 8),
+                      Text(
+                        item['name'] ?? 'Nom non disponible',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              )).toList(),
+                      const SizedBox(height: 5),
+                      Text(
+                        '${item['price']} MAD x ${item['quantity'] ?? 1}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
           ),
         ],

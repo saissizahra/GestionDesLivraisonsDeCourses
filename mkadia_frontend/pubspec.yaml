@@ -39,6 +39,8 @@ dependencies:
   http: ^0.13.6
   intl: ^0.18.1
   carousel_slider: ^5.0.0
+  permission_handler: ^11.4.0
+ 
 
 
 

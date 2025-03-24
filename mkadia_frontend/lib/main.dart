@@ -6,6 +6,7 @@ import 'package:mkadia/provider/PayementManager.dart';
 import 'package:mkadia/provider/UserPrivider.dart';
 import 'package:mkadia/provider/provi_confidentialit%C3%A9.dart';
 import 'package:mkadia/provider/searchProvider.dart';
+//import 'package:mkadia/views/location/providerlocation';
 import 'package:mkadia/views/login/home.dart';
 import 'package:mkadia/provider/OrderProvider.dart';
 import 'package:mkadia/provider/cartProvider.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PasswordProvider()),
         ChangeNotifierProvider(create: (_) => PaymentManager()),  
         ChangeNotifierProvider(create: (_) => UserProvider()), 
+        //ChangeNotifierProvider(create: (_) => LocationProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mkadia/provider/OrderProvider.dart';
 import 'package:mkadia/services/OrderApiService.dart';
 import 'package:mkadia/services/api_service.dart';
 import 'dart:convert';
@@ -58,17 +59,21 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Map<String, dynamic>> confirmOrder(double tax, double deliveryFee, String? promoCode) async {
+  Future<Map<String, dynamic>> confirmOrder(BuildContext context, double tax, double deliveryFee, String? promoCode, String deliveryAddress) async {
     try {
       final orderData = {
-        'user_id': 1, // Remplacer par l'ID de l'utilisateur connecté si disponible
+        'user_id': 1,
         'items': _cart.map((item) => {
           'product_id': item['id'],
           'quantity': item['quantity'],
           'price': item['price'],
+          'total': (double.parse(item['price'].toString()) * item['quantity']).toString(),
         }).toList(),
         'tax': tax,
         'delivery_fee': deliveryFee,
+        'total_amount': totalPrice() + tax + deliveryFee,
+        'order_date': DateTime.now().toIso8601String(),
+        'delivery_address': deliveryAddress, 
       };
 
       print('Données envoyées à l\'API : $orderData');
@@ -85,14 +90,33 @@ class CartProvider with ChangeNotifier {
 
       _lastOrderResponse = orderResponse;
 
-      // Traiter la réponse
-      _confirmedItems.addAll(List.from(_cart)); // Faire une copie des produits confirmés
-      _cart.clear(); // Vider le panier
+      // Copier les articles du panier dans confirmedItems
+      _confirmedItems.clear();
+      for (var item in _cart) {
+        _confirmedItems.add({
+          'id': item['id'],
+          'name': item['name'],
+          'price': item['price'],
+          'quantity': item['quantity'],
+          'image': item['image'], 
+          'image_url': item['image_url'] ?? item['image'],
+        });
+      }
+      
+      print('Items confirmed: $_confirmedItems');
+      
+      _cart.clear();
       _isOrderConfirmed = true;
       notifyListeners();
       
       print('Commande confirmée avec succès ! ID: ${orderResponse['order_id']}');
       print('Panier vidé : $_cart');
+
+      // Définir la commande actuelle dans OrderProvider
+      if (context.mounted) {
+        final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+        orderProvider.setOrder(orderResponse);
+      }
       
       return orderResponse;
     } catch (e) {
@@ -100,7 +124,6 @@ class CartProvider with ChangeNotifier {
       throw Exception('Failed to confirm order: $e');
     }
   }
-
   // Réinitialiser la commande
   void resetOrder() {
     _isOrderConfirmed = false;
@@ -117,6 +140,15 @@ class CartProvider with ChangeNotifier {
   double totalPrice() {
     double total = 0.0;
     for (Map<String, dynamic> element in _cart) {
+      total += double.parse(element['price'].toString()) * element['quantity'];
+    }
+    return double.parse(total.toStringAsFixed(2));
+  }
+  
+  // New method: Calculate total price for confirmed items
+  double totalConfirmedPrice() {
+    double total = 0.0;
+    for (Map<String, dynamic> element in _confirmedItems) {
       total += double.parse(element['price'].toString()) * element['quantity'];
     }
     return double.parse(total.toStringAsFixed(2));

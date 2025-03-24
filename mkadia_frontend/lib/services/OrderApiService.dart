@@ -61,7 +61,6 @@ class OrderApiService {
     }
   }
 
-  // Créer une livraison
   static Future<Map<String, dynamic>> createDelivery(Map<String, dynamic> deliveryData) async {
     final response = await http.post(
       Uri.parse('$baseUrl/deliveries'),
@@ -73,6 +72,19 @@ class OrderApiService {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to create delivery');
+    }
+  }
+
+    // Mettre à jour le statut de la livraison
+  static Future<void> updateDeliveryStatus(int deliveryId, String status) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/deliveries/$deliveryId/status'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'delivery_status': status}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update delivery status: ${response.body}');
     }
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mkadia/models/order.dart';
 import 'package:mkadia/provider/BottomNavProvider.dart';
 import 'package:mkadia/views/Delivery/ConfirmationPage.dart';
 import 'package:mkadia/views/Delivery/TrackingPage.dart';
@@ -72,8 +71,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
               case '/deliveryTracking':
                 return const DeliveryTrackingPage();
               case '/deliveryConfirmation':
-                final order = settings.arguments as Order;
-                return DeliveryConfirmationPage(order: order);
+                return const DeliveryConfirmationPage();
               default:
                 return const OrderConfirmationPage(); 
             }

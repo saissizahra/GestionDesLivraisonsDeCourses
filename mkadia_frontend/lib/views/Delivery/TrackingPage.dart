@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
-import 'package:mkadia/models/delivery.dart';
 import 'package:mkadia/provider/OrderProvider.dart';
 import 'package:mkadia/provider/cartProvider.dart';
 import 'package:mkadia/views/Delivery/ConfirmationPage.dart';
@@ -13,7 +12,8 @@ class DeliveryTrackingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final orderProvider = Provider.of<OrderProvider>(context);
-    final delivery = orderProvider.currentOrder?.delivery;
+    final order = orderProvider.currentOrder;
+    final delivery = order != null ? order['delivery'] as Map<String, dynamic>? : null;
 
     if (delivery == null) {
       return Scaffold(
@@ -81,41 +81,6 @@ class DeliveryTrackingPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // Informations sur l'état de la commande
-            Card(
-              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'État de la commande',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(
-                          _getDeliveryStatusIcon(delivery.status),
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          _getDeliveryStatusText(delivery.status),
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
             // Contact du livreur
             Card(
               margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
@@ -135,8 +100,8 @@ class DeliveryTrackingPage extends StatelessWidget {
                     const SizedBox(height: 10),
                     ListTile(
                       leading: const Icon(Icons.person, color: Colors.grey),
-                      title: Text(delivery.driver.name),
-                      subtitle: Text(delivery.driver.phone),
+                      title: Text(delivery['driver']['name']), 
+                      subtitle: Text(delivery['driver']['phone']), 
                     ),
                   ],
                 ),
@@ -167,18 +132,18 @@ class DeliveryTrackingPage extends StatelessWidget {
                       final order = orderProvider.currentOrder;
                       final cartProvider = Provider.of<CartProvider>(context, listen: false);
 
-                       if (order != null) {
-                        // Réinitialiser la commande actuelle
-                        orderProvider.clearOrder();
-                        // Vider les produits confirmés
-                        cartProvider.clearConfirmedItems();
+                      if (order != null) {
                         // Naviguer vers la page de confirmation de livraison sans pouvoir revenir
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DeliveryConfirmationPage(order: order),
-                          )
-                        );
+                            builder: (context) => const DeliveryConfirmationPage(),
+                          ),
+                        ).then((_) {
+                          // Réinitialiser la commande et les produits confirmés APRÈS la navigation
+                          orderProvider.clearOrder();
+                          cartProvider.clearConfirmedItems();
+                        });
                       } else {
                         // Afficher un message d'erreur si l'order est null
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -195,33 +160,5 @@ class DeliveryTrackingPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  // Méthode pour obtenir l'icône en fonction de l'état de la livraison
-  IconData _getDeliveryStatusIcon(DeliveryStatus status) {
-    switch (status) {
-      case DeliveryStatus.preparing:
-        return Icons.timer;
-      case DeliveryStatus.inTransit:
-        return Icons.directions_bike;
-      case DeliveryStatus.delivered:
-        return Icons.check_circle;
-      default:
-        return Icons.error;
-    }
-  }
-
-  // Méthode pour obtenir le texte en fonction de l'état de la livraison
-  String _getDeliveryStatusText(DeliveryStatus status) {
-    switch (status) {
-      case DeliveryStatus.preparing:
-        return 'En préparation';
-      case DeliveryStatus.inTransit:
-        return 'En cours de livraison';
-      case DeliveryStatus.delivered:
-        return 'Livré';
-      default:
-        return 'Statut inconnu';
-    }
   }
 }

@@ -8,9 +8,9 @@ class DeliveryDetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Extraire les données de la commande
-    final int orderId = order['id'];
+    final String orderId = order['id'].toString(); // Utiliser directement comme String
+    final String address = order['delivery_address'] ?? 'Adresse non spécifiée'; // Valeur par défaut si null
     final Map<String, dynamic> delivery = order['delivery'];
-    final String address = delivery['address'];
     final String estimatedDeliveryTime = delivery['estimated_delivery_time'];
 
     return Container(
@@ -39,7 +39,7 @@ class DeliveryDetailsCard extends StatelessWidget {
               const Icon(Icons.location_on, size: 20, color: Colors.grey),
               const SizedBox(width: 10),
               Text(
-                address,
+                address, // Afficher l'adresse de livraison
                 style: const TextStyle(fontSize: 14),
               ),
             ],

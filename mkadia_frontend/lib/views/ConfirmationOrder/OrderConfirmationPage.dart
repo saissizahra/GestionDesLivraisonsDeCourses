@@ -17,7 +17,6 @@ class OrderConfirmationPage extends StatelessWidget {
     final orderProvider = Provider.of<OrderProvider>(context);
     final order = orderProvider.currentOrder;
 
-    // Déterminer quels articles afficher (cart ou confirmedItems)
     final itemsToDisplay = cartProvider.cart.isEmpty && cartProvider.isOrderConfirmed 
         ? cartProvider.confirmedItems 
         : cartProvider.cart;
@@ -51,7 +50,7 @@ class OrderConfirmationPage extends StatelessWidget {
         ),
         body: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // Centre verticalement
+            mainAxisAlignment: MainAxisAlignment.center, 
             children: [
               Image.asset(
                 'assets/img/panier.png',
@@ -75,7 +74,6 @@ class OrderConfirmationPage extends StatelessWidget {
 
     // *Si une commande existe
     
-    // Calculer le total basé sur les articles affichés
     final double totalProducts = double.parse(
       (itemsToDisplay.fold(0.0, (sum, item) => sum + (double.parse(item['price'].toString()) * item['quantity']))).toStringAsFixed(2)
     );    
@@ -115,6 +113,7 @@ class OrderConfirmationPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (order != null) DeliveryDetailsCard(order: order),  
             const PaymentMethodCard(),
             OrderSummaryCard(items: itemsToDisplay),
             PaymentDetailsCard(  

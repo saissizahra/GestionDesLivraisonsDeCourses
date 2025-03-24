@@ -1,0 +1,87 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+
+class LocationData {
+  final String city;
+  final String capital;
+  final double latitude;
+  final double longitude;
+
+  LocationData({
+    required this.city,
+    required this.capital,
+    required this.latitude,
+    required this.longitude,
+  });
+}
+
+class LocationService {
+  static Future<bool> checkLocationPermission() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return false;
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return false;
+      }
+      
+      return permission != LocationPermission.deniedForever;
+    } catch (e) {
+      print('Erreur de permission: $e');
+      return false;
+    }
+  }
+
+  static Future<Position?> getCurrentPosition() async {
+    try {
+      if (!await checkLocationPermission()) return null;
+      
+      return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      ).timeout(const Duration(seconds: 15));
+    } on TimeoutException {
+      print('Timeout lors de la récupération de la position');
+      return null;
+    } catch (e) {
+      print('Erreur de localisation: $e');
+      return null;
+    }
+  }
+
+  static Future<LocationData> getLocationDetails(
+    double latitude, 
+    double longitude,
+  ) async {
+    try {
+      // Remplacez par votre véritable endpoint API
+      final response = await http.get(
+        Uri.parse('https://votre-api.com/api/location?lat=$latitude&lng=$longitude'),
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return LocationData(
+          city: data['city'] ?? 'Safi',
+          capital: data['capital'] ?? 'Marrakech',
+          latitude: latitude,
+          longitude: longitude,
+        );
+      }
+    } catch (e) {
+      print('Erreur API de localisation: $e');
+    }
+
+    // Valeurs par défaut en cas d'échec
+    return LocationData(
+      city: 'Safi',
+      capital: 'Marrakech',
+      latitude: latitude,
+      longitude: longitude,
+    );
+  }
+}

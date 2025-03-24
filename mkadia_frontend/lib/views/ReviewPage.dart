@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
 import 'package:mkadia/provider/cartProvider.dart';
@@ -19,7 +17,6 @@ class ReviewPage extends StatefulWidget {
 
 class _ReviewPageState extends State<ReviewPage> {
   int _deliveryRating = 0;
-  int _serviceRating = 0;
   final Map<String, int> _productRatings = {};
   final TextEditingController _commentController = TextEditingController();
   bool _isSubmitting = false;
@@ -50,7 +47,7 @@ class _ReviewPageState extends State<ReviewPage> {
       final reviewData = {
         'order_id': widget.order['id'].toString(),
         'user_id': 1, // Remplacer par l'ID de l'utilisateur actuel si disponible
-        'delivery_rating': _deliveryRating, // Supprimez `service_rating`
+        'delivery_rating': _deliveryRating,
         'comment': _commentController.text,
         'product_reviews': _productRatings.entries.map((entry) => {
           'product_id': entry.key,
@@ -181,19 +178,6 @@ class _ReviewPageState extends State<ReviewPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Évaluation du service
-          _buildRatingSection(
-            title: "Évaluation du service",
-            onRatingUpdate: (rating) {
-              setState(() {
-                _serviceRating = rating;
-              });
-            },
-            rating: _serviceRating,
-          ),
-          
-          const SizedBox(height: 20),
-          
           // Évaluation de la livraison
           _buildRatingSection(
             title: "Évaluation de la livraison",
@@ -250,7 +234,7 @@ class _ReviewPageState extends State<ReviewPage> {
           
           // Bouton de soumission
           ElevatedButton(
-            onPressed: _isSubmitting || _serviceRating == 0 || _deliveryRating == 0 
+            onPressed: _isSubmitting || _deliveryRating == 0 
                 ? null 
                 : _submitReview,
             style: ElevatedButton.styleFrom(

@@ -1,33 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:mkadia/common/color_extension.dart';
 import 'package:mkadia/provider/UserPrivider.dart';
-import 'package:provider/provider.dart'; // Import pour Provider
+import 'package:provider/provider.dart'; 
 import 'package:mkadia/views/parametre/parametre.dart';
 import 'package:mkadia/views/home/HomeView.dart';
 
 class ProfilPage extends StatelessWidget {
-  const ProfilPage({super.key}); // Utilisation du super key
+  const ProfilPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Récupère l'utilisateur à partir du provider
     final user = Provider.of<UserProvider>(context).user;
 
-    // Vérifie si l'utilisateur existe
     if (user == null) {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Profil Utilisateur'),
-          backgroundColor: Colors.green,
+          backgroundColor: TColor.primaryText,
           elevation: 0,
         ),
-        body: const Center(child: CircularProgressIndicator()), // Ajout de const
+        body: const Center(child: CircularProgressIndicator()), 
       );
     }
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profil Utilisateur'),
-        backgroundColor: Colors.green,
+        backgroundColor: TColor.primaryText,
         elevation: 0,
         actions: [
           IconButton(
@@ -55,7 +54,7 @@ class ProfilPage extends StatelessWidget {
                 backgroundImage: user.avatarURL.startsWith('assets/')
                     ? AssetImage(user.avatarURL) // Charger une image locale
                     : NetworkImage(user.avatarURL) as ImageProvider, // Charger une image depuis une URL
-                backgroundColor: Colors.green.shade100,
+                backgroundColor: TColor.primaryText
               ),
             ),
             const SizedBox(height: 20),
@@ -64,10 +63,10 @@ class ProfilPage extends StatelessWidget {
             Center(
               child: Text(
                 user.name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.green,
+                  color: TColor.primaryText,
                 ),
               ),
             ),
@@ -90,10 +89,10 @@ class ProfilPage extends StatelessWidget {
               title: 'Historique des Commandes',
               children: [
                 ListTile(
-                  leading: const Icon(Icons.history, color: Colors.green),
+                  leading: Icon(Icons.history, color: TColor.primaryText),
                   title: const Text('Voir l\'historique'),
                   onTap: () {
-                    Navigator.pushNamed(context, '/orderHistory'); // Redirection vers l'historique des commandes
+                    Navigator.pushNamed(context, '/orderHistory'); 
                   },
                 ),
               ],
@@ -106,7 +105,7 @@ class ProfilPage extends StatelessWidget {
               title: 'Paramètres et Préférences',
               children: [
                 ListTile(
-                  leading: const Icon(Icons.settings, color: Colors.green),
+                  leading: Icon(Icons.settings, color: TColor.primaryText),
                   title: const Text('Paramètres'),
                   onTap: () {
                     Navigator.push(
@@ -136,10 +135,10 @@ class ProfilPage extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.green,
+                color: TColor.primaryText,
               ),
             ),
             const SizedBox(height: 10),
@@ -153,7 +152,7 @@ class ProfilPage extends StatelessWidget {
   // Fonction pour créer une ligne d'informations
   Widget _buildListTile(IconData icon, String title, String subtitle) {
     return ListTile(
-      leading: Icon(icon, color: Colors.green),
+      leading: Icon(icon, color: TColor.primaryText),
       title: Text(title),
       subtitle: Text(subtitle),
     );

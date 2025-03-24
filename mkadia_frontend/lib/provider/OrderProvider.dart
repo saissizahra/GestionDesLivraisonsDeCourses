@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mkadia/models/order.dart';
 
 class OrderProvider with ChangeNotifier {
-  Order? _currentOrder;
+  Map<String, dynamic>? _currentOrder;
 
   // Getters
-  Order? get currentOrder => _currentOrder;
+  Map<String, dynamic>? get currentOrder => _currentOrder;
 
   // Définir une commande
-  void setOrder(Order order) {
+  void setOrder(Map<String, dynamic> order) {
     _currentOrder = order;
     notifyListeners();
   }
@@ -18,6 +17,4 @@ class OrderProvider with ChangeNotifier {
     _currentOrder = null;
     notifyListeners();
   }
-
-  
 }

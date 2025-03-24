@@ -19,9 +19,9 @@ class PaymentPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    Provider.of<CartProvider>(context);
-    final orderProvider = Provider.of<OrderProvider>(context);
-    final order = orderProvider.currentOrder;
+  Provider.of<CartProvider>(context);
+  final orderProvider = Provider.of<OrderProvider>(context);
+  final order = orderProvider.currentOrder;
 
     if (order == null) {
       return Scaffold(
@@ -37,14 +37,17 @@ class PaymentPage extends StatelessWidget {
     }
 
 
+    // Accéder aux éléments de la commande en tant que Map
+    final items = order['items'] as List<dynamic>;
     final double totalProducts = double.parse(
-      (order.items.fold(0.0, (sum, item) => sum + (item.price * item.quantity))).toStringAsFixed(2)
+      (items.fold(0.0, (sum, item) => sum + (double.parse(item['price'].toString()) * item['quantity']))).toStringAsFixed(2)
     );    
     final double tax = double.parse(
       (totalProducts * 0.1).toStringAsFixed(2)
     ); 
     final double deliveryFee = 10; 
     final double totalAmount = double.parse((totalProducts + tax + deliveryFee).toStringAsFixed(2));
+
 
     return Scaffold(
       appBar: PreferredSize(
