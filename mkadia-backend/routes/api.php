@@ -35,7 +35,12 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 // Routes pour les catégories
 Route::get('/categories', [CategoryController::class, 'index']);
 
+// Routes pour les commandes
+Route::get('/orders', [OrderController::class, 'index']); // Toutes les commandes (admin)
 Route::post('/orders', [OrderController::class, 'store']); 
+Route::get('/orders/{id}', [OrderController::class, 'show']); // Détails d'une commande
+Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus']); // Mise à jour statut
+Route::get('/users/{userId}/orders', [OrderController::class, 'getUserOrders']); // Commandes d'un user
 Route::post('/orders/confirm', [OrderController::class, 'confirmOrder']);
 
 // Routes pour les promotions

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
 import 'package:mkadia/provider/UserPrivider.dart';
+import 'package:mkadia/views/profil/widgets/FAQPage.dart';
+import 'package:mkadia/views/profil/widgets/OrderHistoryPage.dart';
 import 'package:provider/provider.dart'; 
 import 'package:mkadia/views/parametre/parametre.dart';
 import 'package:mkadia/views/home/HomeView.dart';
@@ -92,7 +94,13 @@ class ProfilPage extends StatelessWidget {
                   leading: Icon(Icons.history, color: TColor.primaryText),
                   title: const Text('Voir l\'historique'),
                   onTap: () {
-                    Navigator.pushNamed(context, '/orderHistory'); 
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const OrderHistoryPage(),
+                      ),
+                    );
+                   
                   },
                 ),
               ],
@@ -111,7 +119,19 @@ class ProfilPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ParametrePage(), // Ajout de const
+                        builder: (context) => const ParametrePage(),
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.help_outline, color: TColor.primaryText),
+                  title: const Text('FAQ'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FAQPage(),
                       ),
                     );
                   },

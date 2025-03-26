@@ -18,21 +18,29 @@ class CartProvider with ChangeNotifier {
   Map<String, dynamic>? get lastOrderResponse => _lastOrderResponse;
 
   void toggleFavorite(Map<String, dynamic> product, int quantity) async {
-    final existingProductIndex = _cart.indexWhere((p) => p['id'].toString() == product['id'].toString());
+    final existingProductIndex = _cart.indexWhere(
+      (p) => p['id'].toString() == product['id'].toString(),
+    );
+
     if (existingProductIndex != -1) {
       _cart[existingProductIndex]['quantity'] += quantity;
     } else {
-      product['quantity'] = quantity;
-      product['id'] = product['id'].toString();
-      _cart.add(product);
+      _cart.add({
+        'id': product['id'].toString(),
+        'name': product['name'],
+        'price': product['price'],
+        'quantity': quantity,
+        'image_url': product['image_url'],
+        'category': product['category'],
+      });
     }
     notifyListeners();
   }
 
-  void incrementQtn(String productId) {
+  void incrementQtn(String productId, {int by = 1}) {
     final productIndex = _cart.indexWhere((p) => p['id'].toString() == productId);
     if (productIndex != -1) {
-      _cart[productIndex]['quantity']++;
+      _cart[productIndex]['quantity'] += by;
       notifyListeners();
     }
   }

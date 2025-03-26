@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:mkadia/views/location/LocationConfirmedScreen';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:mkadia/common/color_extension.dart';
 import 'package:mkadia/views/home/widget/navbar.dart';

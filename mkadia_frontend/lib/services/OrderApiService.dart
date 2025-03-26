@@ -20,18 +20,34 @@ class OrderApiService {
     }
   }
 
-  // Récupérer les commandes d'un utilisateur
-  static Future<List<dynamic>> getUserOrders(int userId) async {
+static Future<List<dynamic>> getUserOrders(int userId) async {
+  try {
     final response = await http.get(
-      Uri.parse('$baseUrl/users/$userId/orders'),
+      Uri.parse('$baseUrl/orders?user_id=$userId'),
+      headers: {'Accept': 'application/json'},
     );
 
+    print('API Response: ${response.statusCode} - ${response.body}'); // Debug
+
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final responseData = jsonDecode(response.body);
+      
+      // Vérifiez la structure de réponse attendue
+      if (responseData is List) {
+        return responseData;
+      } else if (responseData['orders'] is List) {
+        return responseData['orders'];
+      } else {
+        throw Exception('Format de réponse inattendu');
+      }
     } else {
-      throw Exception('Failed to load user orders');
+      throw Exception('Erreur serveur: ${response.statusCode}');
     }
+  } catch (e) {
+    print('Erreur API: $e');
+    throw Exception('Échec du chargement des commandes');
   }
+}
 
   // Récupérer les détails d'une commande
   static Future<Map<String, dynamic>> getOrderDetails(int orderId) async {

@@ -118,14 +118,33 @@ class OrderController extends Controller
 
     public function getUserOrders($userId)
     {
-        $orders = Order::with(['items.product'])
+        $orders = Order::with(['items.product.category'])
             ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
-            ->get();
-
-        return response()->json($orders);
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'total_amount' => $order->total_amount,
+                    'order_date' => $order->order_date,
+                    'order_status' => $order->order_status,
+                    'items' => $order->items->map(function ($item) {
+                        return [
+                            'product_id' => $item->product_id,
+                            'quantity' => $item->quantity,
+                            'price' => $item->price,
+                            'product' => [
+                                'name' => $item->product->name,
+                                'image_url' => $item->product->image_url,
+                                'category' => $item->product->category,
+                            ],
+                        ];
+                    }),
+                ];
+            });
+    
+        return response()->json(['orders' => $orders]);
     }
-
     public function confirmOrder(Request $request)
     {
         $validator = Validator::make($request->all(), [

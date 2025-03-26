@@ -1,0 +1,2 @@
+C:/Users/hp/Documents/PFE/categorie/flutter_application_catmkadia/mkadia_frontend/android/app/.cxx/Debug/4mho2k6j/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/hp/Documents/PFE/categorie/flutter_application_catmkadia/mkadia_frontend/android/app/.cxx/Debug/4mho2k6j/x86_64/CMakeFiles/rebuild_cache.dir
