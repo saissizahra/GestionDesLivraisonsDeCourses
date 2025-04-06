@@ -89,82 +89,40 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        try {
-            $order = Order::with([
-                'user.clientProfile',
-                'driver.driverProfile',
-                'items.product.category'
-            ])->findOrFail($id);
-    
-            $response = [
-                'id' => $order->id,
-                'order_status' => $order->order_status,
-                'driver_id' => $order->driver_id,
-                'driver' => $order->driver ? [
-                    'id' => $order->driver->id,
-                    'name' => $order->driver->name,
-                    'phone' => $order->driver->driverProfile->phone ?? 'Non disponible',
-                    'email' => $order->driver->email
-                ] : null,
-                'items' => $order->items->map(function ($item) {
-                    return [
-                        'product' => [
-                            'name' => $item->product->name,
-                            'image_url' => $item->product->image_url
-                        ],
-                        'quantity' => $item->quantity
-                    ];
-                })
-            ]; // <-- Cette accolade ferme le tableau $response
-    
-            return response()->json($response); // <-- Ajout du point-virgule manquant
-    
-        } catch (\Exception $e) {
-            Log::error('Error fetching order details: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve order details',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        $order = Order::with(['user', 'items.product'])->findOrFail($id);
+        return response()->json($order);
     }
 
-// Modifier cette méthode pour inclure le driver dans les données
-public function getUserOrders($userId)
-{
-    $orders = Order::with(['items.product.category', 'driver'])
-        ->where('user_id', $userId)
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->map(function ($order) {
-            return [
-                'id' => $order->id,
-                'total_amount' => $order->total_amount,
-                'order_date' => $order->order_date,
-                'order_status' => $order->order_status,
-                'delivery_address' => $order->delivery_address,
-                'driver' => $order->driver ? [
-                    'id' => $order->driver->id,
-                    'name' => $order->driver->name,
-                    'phone' => $order->driver->driverProfile->phone ?? 'Non spécifié'
-                ] : null,
-                'items' => $order->items->map(function ($item) {
-                    return [
-                        'product_id' => $item->product_id,
-                        'quantity' => $item->quantity,
-                        'price' => $item->price,
-                        'product' => [
-                            'name' => $item->product->name,
-                            'image_url' => $item->product->image_url,
-                            'category' => $item->product->category,
-                        ],
-                    ];
-                }),
-            ];
-        });
-
-    return response()->json(['orders' => $orders]);
-}
+    public function getUserOrders($userId)
+    {
+        $orders = Order::with(['items.product.category'])
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'total_amount' => $order->total_amount,
+                    'order_date' => $order->order_date,
+                    'order_status' => $order->order_status,
+                    'delivery_address' => $order->delivery_address,
+                    'items' => $order->items->map(function ($item) {
+                        return [
+                            'product_id' => $item->product_id,
+                            'quantity' => $item->quantity,
+                            'price' => $item->price,
+                            'product' => [
+                                'name' => $item->product->name,
+                                'image_url' => $item->product->image_url,
+                                'category' => $item->product->category,
+                            ],
+                        ];
+                    }),
+                ];
+            });
+    
+        return response()->json(['orders' => $orders]);
+    }
     public function confirmOrder(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -216,28 +174,24 @@ public function getUserOrders($userId)
     }
         // Assigner un livreur à une commande
 
-        public function assignDriver(Request $request, $orderId)
-        {
-            $request->validate([
-                'driver_id' => 'required|exists:users,id'
-            ]);
-        
-            $order = Order::findOrFail($orderId);
-            
-            $order->update([
-                'driver_id' => $request->driver_id,
-                'order_status' => 'assigned'
-            ]);
-        
-            // Recharge la commande avec toutes les relations
-            $order->load(['user', 'driver.driverProfile', 'items.product']);
-        
-            return response()->json([
-                'success' => true,
-                'message' => 'Livreur assigné avec succès',
-                'order' => $order
-            ]);
-        }
+    public function assignDriver(Request $request, $orderId)
+    {
+        $request->validate([
+            'driver_id' => 'required|exists:users,id'
+        ]);
+
+        $order = Order::findOrFail($orderId);
+        $order->update([
+            'driver_id' => $request->driver_id,
+            'order_status' => 'assigned'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Livreur assigné avec succès',
+            'order' => $order->load(['user', 'driver', 'items.product'])
+        ]);
+    }
     
     
 
@@ -281,7 +235,7 @@ public function getUserOrders($userId)
     // Récupérer les commandes pour un livreur
     public function getDriverOrders($driverId)
     {
-        $orders = Order::with(['user:id,name', 'items.product:id,name,image_url', 'driver'])
+        $orders = Order::with(['user:id,name', 'items.product:id,name,image_url'])
             ->where('driver_id', $driverId)
             ->whereIn('order_status', ['assigned', 'in_progress', 'delivered'])
             ->orderBy('created_at', 'desc')
@@ -289,17 +243,11 @@ public function getUserOrders($userId)
             ->map(function ($order) {
                 return [
                     'id' => $order->id,
-                    'order_status' => $order->order_status ?? 'inconnu', // Utilisez toujours order_status
-                    'status' => $order->order_status ?? 'inconnu', // Pour compatibilité
+                    'status' => $order->order_status ?? 'inconnu',
                     'total_amount' => $order->total_amount ?? 0,
                     'delivery_address' => $order->delivery_address ?? 'Adresse inconnue',
                     'created_at' => $order->created_at->format('Y-m-d H:i'),
                     'phone' => $order->user->clientProfile->phone ?? 'Non spécifié',
-                    'driver' => $order->driver ? [
-                        'id' => $order->driver->id,
-                        'name' => $order->driver->name,
-                        'phone' => $order->driver->driverProfile->phone ?? 'Non spécifié'
-                    ] : null,
                     'items' => $order->items->map(function ($item) {
                         return [
                             'product_name' => $item->product->name ?? 'Produit inconnu',
@@ -314,23 +262,4 @@ public function getUserOrders($userId)
             
         return response()->json($orders);
     }
-    public function confirmDelivery(Request $request, $orderId)
-{
-    try {
-        $order = Order::findOrFail($orderId);
-        $order->update(['order_status' => 'completed']);
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Livraison confirmée avec succès',
-            'order' => $order
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Erreur lors de la confirmation',
-            'error' => $e->getMessage()
-        ], 500);
-    }
-}
 }

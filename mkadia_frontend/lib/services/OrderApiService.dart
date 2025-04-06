@@ -62,7 +62,6 @@ static Future<List<Map<String, dynamic>>> getDriverOrders(int driverId) async {
     }
   }
     // Méthode spécifique pour que le client confirme la livraison
-  // Méthode spécifique pour que le client confirme la livraison
   static Future<Map<String, dynamic>> confirmDelivery(int orderId) async {
     final response = await http.put(
       Uri.parse('$baseUrl/orders/$orderId/confirm-delivery'),
@@ -75,6 +74,7 @@ static Future<List<Map<String, dynamic>>> getDriverOrders(int driverId) async {
       throw Exception('Échec de la confirmation de livraison: ${response.statusCode}');
     }
   }
+  // Mettre à jour le statut d'une commande
   // Mettre à jour le statut d'une commande
   static Future<Map<String, dynamic>> updateOrderStatus(int orderId, String status) async {
     final response = await http.put(
@@ -130,5 +130,4 @@ static Future<List<Map<String, dynamic>>> getDriverOrders(int driverId) async {
       throw Exception('Failed to load order details');
     }
   }
-
 }
