@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mkadia/common/color_extension.dart';
 import 'package:mkadia/provider/PayementManager.dart';
 import 'package:mkadia/views/parametre/ChangeMotDePassePage.dart';
 import 'package:mkadia/views/parametre/PaymentSavePage.dart';
@@ -21,23 +22,28 @@ class ParametrePageState extends State<ParametrePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Paramètres'),
-        backgroundColor: Colors.green,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const HomeView(),
-                ),
-              );
-            },
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(25),
+            bottomRight: Radius.circular(25),
           ),
-        ],
+          child: AppBar(
+            toolbarHeight: 80,
+            backgroundColor: TColor.primaryText,
+            elevation: 0,
+            title: Text(
+              "Parametre",
+              style: TextStyle(
+                color: TColor.primary,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            centerTitle: true,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

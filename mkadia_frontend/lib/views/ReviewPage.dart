@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
+import 'package:mkadia/provider/UserProvider.dart';
 import 'package:mkadia/provider/cartProvider.dart';
 import 'package:mkadia/services/api_service.dart';
 import 'package:provider/provider.dart';
@@ -40,11 +41,19 @@ class _ReviewPageState extends State<ReviewPage> {
 
   Future<void> _submitReview() async {
     setState(() => _isSubmitting = true);
-    
+      
     try {
+      
+      // Récupérer l'utilisateur actuel
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final userId = userProvider.user?.id;
+      
+      if (userId == null) {
+        throw Exception('Utilisateur non connecté');
+      }
       final reviewData = {
         'order_id': widget.order['id'].toString(),
-        'user_id': 1,
+        'user_id': userId,
         'delivery_rating': _deliveryRating,
         'comment': _commentController.text,
         'product_reviews': _productRatings.entries.map((entry) => {

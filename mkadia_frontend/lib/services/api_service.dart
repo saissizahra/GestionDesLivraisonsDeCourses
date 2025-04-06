@@ -127,22 +127,46 @@ class ApiService {
     return jsonDecode(response.body);
   }
   static Future<Map<String, dynamic>> confirmOrder(int orderId, String promoCode) async {
-  final response = await http.post(
-    Uri.parse('$baseUrl/orders/confirm'),
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({
-      'order_id': orderId,
-      'promo_code': promoCode,
-    }),
-  );
+    final response = await http.post(
+      Uri.parse('$baseUrl/orders/confirm'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'order_id': orderId,
+        'promo_code': promoCode,
+      }),
+    );
 
-  if (response.statusCode == 200) {
-    return jsonDecode(response.body);
-  } else {
-    print('Erreur lors de la confirmation de la commande: ${response.body}');
-    throw Exception('Failed to confirm order: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      print('Erreur lors de la confirmation de la commande: ${response.body}');
+      throw Exception('Failed to confirm order: ${response.statusCode}');
+    }
   }
-}
+  static Future<List<dynamic>> fetchDrivers() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/drivers'),
+      headers: {'Accept': 'application/json'},
+    );
 
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load drivers');
+    }
+  }
+
+  static Future<List<dynamic>> fetchAvailableDrivers() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/drivers/available'),
+      headers: {'Accept': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load available drivers');
+    }
+  }
 
 }

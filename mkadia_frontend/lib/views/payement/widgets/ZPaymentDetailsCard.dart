@@ -1,17 +1,13 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
-import 'package:mkadia/models/delivery.dart';
-import 'package:mkadia/models/driver.dart';
-import 'package:mkadia/models/order.dart';
 import 'package:mkadia/provider/OrderProvider.dart';
+
 import 'package:mkadia/provider/PayementManager.dart';
 import 'package:mkadia/provider/cartProvider.dart';
 import 'package:mkadia/services/api_service.dart';
 import 'package:mkadia/views/ConfirmationOrder/OrderConfirmationPage.dart';
-import 'package:mkadia/views/Delivery/TrackingPage.dart';
 import 'package:mkadia/views/home/widget/navbar.dart';
+
 import 'package:provider/provider.dart';
 
 class ZPaymentDetailsCard extends StatefulWidget {
@@ -38,7 +34,6 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
   String _promoCode = '';
   double _discount = 0.0;
   double _finalTotal = 0.0;
-  final TextEditingController _addressController = TextEditingController(); // Ajouter un contrôleur pour l'adresse
 
   @override
   void initState() {
@@ -48,6 +43,8 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
 
   @override
   Widget build(BuildContext context) {
+        final orderProvider = Provider.of<OrderProvider>(context); // <-- Ajoutez cette ligne
+
     return Container(
       height: 415, // Ajuster la hauteur pour accommoder le champ d'adresse
       width: double.infinity,
@@ -61,19 +58,7 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
           ),
           const SizedBox(height: 15),
 
-          // Champ pour l'adresse de livraison
-          TextField(
-            controller: _addressController,
-            decoration: InputDecoration(
-              hintText: 'Entrez votre adresse de livraison',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              filled: true,
-              fillColor: Colors.grey[200],
-            ),
-          ),
-          const SizedBox(height: 15),
+
 
           // Ajout du champ pour le code promo
           Row(
@@ -284,14 +269,15 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              // Vérifier que l'adresse de livraison est remplie
-              if (_addressController.text.isEmpty) {
+              final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+              
+              // Vérifiez le bon contrôleur
+              if (orderProvider.addressController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Veuillez entrer une adresse de livraison')),
                 );
                 return;
               }
-
               widget.paymentManager.savePaymentInfo(context);
               _placeOrder(context);
             },
@@ -313,24 +299,52 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
     );
   }
 
-  void _placeOrder(BuildContext context) {
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+Future<void> _placeOrder(BuildContext context) async {
+  final cartProvider = Provider.of<CartProvider>(context, listen: false);
+  final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+  try {
+    if (orderProvider.addressController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Veuillez entrer une adresse valide')),
+      );
+    return;
+    }
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
 
-    // Récupérer la commande actuelle avant de la confirmer
-    final currentOrder = orderProvider.currentOrder;
-
-    cartProvider.confirmOrder(
+    final orderResponse = await cartProvider.confirmOrder(
       context,
       widget.tax,
-      widget.paymentManager.deliveryFee,
-      _promoCode,
-      _addressController.text, 
+      widget.deliveryFee,
+      _promoCode.isNotEmpty ? _promoCode : null,
+      orderProvider.addressController.text, 
     );
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const BottomNavBar()),
-    );
+    // Vérifiez explicitement le succès
+    if (orderResponse['success'] != true) {
+      throw Exception('Échec de la création de commande: ${orderResponse['message']}');
+    }
+
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const BottomNavBar(),
+        ),
+      );
+    }
+  } catch (e) {
+    if (context.mounted) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur: ${e.toString()}')),
+      );
+    }
   }
+}
 }

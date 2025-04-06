@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:mkadia/views/ajouter/AdminOrdersPage.dart';
+import 'package:mkadia/views/ajouter/DriverOrdersPage.dart';
+import 'package:provider/provider.dart';
 import 'package:mkadia/common/color_extension.dart';
+import 'package:mkadia/provider/UserProvider.dart';
 import 'package:mkadia/views/home/widget/navbar.dart';
-import 'forget.dart'; 
-import 'singup.dart';
+import 'package:mkadia/views/login/singup.dart';
+import 'package:mkadia/views/login/forget.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -14,196 +19,198 @@ class LoginScreen extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Logo de l'application
-              Container(
-                height: 150,
-                width: 150,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    "assets/img/logoshop.png", 
-                    fit: BoxFit.cover,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: 150,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      "assets/img/logoshop.png",
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
-
-              // Titre de l'application
-              Text(
-                'Mkadia',
-                style: TextStyle(
-                  fontSize: 45,
-                  fontWeight: FontWeight.bold,
-                  color: TColor.primaryColor, 
-                ),
-              ),
-              const SizedBox(height: 80),
-
-              // Email
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Email/Phone number',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                const SizedBox(height: 10),
+                Text(
+                  'Mkadia',
+                  style: TextStyle(
+                    fontSize: 45,
+                    fontWeight: FontWeight.bold,
+                    color: TColor.primaryColor,
                   ),
-                  prefixIcon: const Icon(Icons.email),
                 ),
-              ),
-              const SizedBox(height: 15),
-
-              // Mot de passe
-              TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                const SizedBox(height: 50),
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    prefixIcon: const Icon(Icons.email),
                   ),
-                  prefixIcon: const Icon(Icons.lock),
+                  keyboardType: TextInputType.emailAddress,
                 ),
-              ),
-              const SizedBox(height: 8),
-              
-              Align(
-                alignment: Alignment.centerRight,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ForgetScreen(),
+                const SizedBox(height: 15),
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    prefixIcon: const Icon(Icons.lock),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ForgetScreen()),
+                      );
+                    },
+                    child: const Text(
+                      "Forgot my password",
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Consumer<UserProvider>(
+                  builder: (context, userProvider, child) {
+                    return ElevatedButton(
+                      onPressed: () async {
+                        try {
+                          final email = _emailController.text.trim();
+                          final password = _passwordController.text.trim();
+
+                          if (email.isEmpty || password.isEmpty) {
+                            throw Exception('Please fill all fields');
+                          }
+
+                          await userProvider.login(email, password);
+
+                          if (userProvider.user?.role == 'driver') {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => DriverOrdersPage(driverId: int.parse(userProvider.user!.id.toString()),),),
+                            );
+                          } else if (userProvider.user?.role == 'admin') {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const AdminOrdersPage()),
+                            );
+                          } else {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const BottomNavBar()),
+                            );
+                          }
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(e.toString()),
+                              backgroundColor: Colors.red,
+                              duration: const Duration(seconds: 3),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        backgroundColor: TColor.primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Sign in',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
                       ),
                     );
                   },
-                  child: const Text(
-                    "Forgot my password",
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
                 ),
-              ),
-              const SizedBox(height: 30),
-
-              // todo: Bouton "Se connecter"
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const BottomNavBar(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: TColor.primaryColor,
-                ),
-                child: const Text(
-                  'Sign in',
+                const SizedBox(height: 20),
+                const Text(
+                  "Or sign with",
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 16,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-
-              // Texte "Or sign with"
-              const Text(
-                "Or sign with",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // todo: Boutons de connexion avec Google et Facebook
-              Column(
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      // Action pour Google
-                    },
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      side: BorderSide(color: TColor.primaryColor),
-                      backgroundColor: const Color.fromARGB(50, 255, 255, 255), // Couleur de fond du bouton Google
-                    ),
-                    icon: Icon(Icons.account_circle, color: TColor.primaryColor,size: 30,),
-                    label: const Text(
-                      'Connect with Google',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      // Action pour Facebook
-                    },
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      side: BorderSide(color: TColor.primaryColor),
-                      backgroundColor: const Color.fromARGB(50, 255, 255, 255), // Couleur de fond du bouton Facebook
-                    ),
-                    icon: Icon(Icons.facebook, color: Colors.blue[900],size: 30,),
-                    label: const Text(
-                      'Connect with Facebook',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 50),
-
-              // Texte en bas "Don't have an account? Sign up"
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SignupScreen(),
-                    ),
-                  );
-                },
-                child: Text.rich(
-                  TextSpan(
-                    text: "Don't have an account? ",
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: TColor.primaryColor,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Sign up',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: TColor.primaryColor,
+                const SizedBox(height: 20),
+                Column(
+                  children: [
+                    OutlinedButton.icon(
+                      onPressed: () {},
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        side: BorderSide(color: TColor.primaryColor),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
+                      icon: Icon(Icons.account_circle, color: TColor.primaryColor),
+                      label: const Text('Connect with Google'),
+                    ),
+                    const SizedBox(height: 10),
+                    OutlinedButton.icon(
+                      onPressed: () {},
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        side: BorderSide(color: TColor.primaryColor),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      icon: Icon(Icons.facebook, color: Colors.blue[900]),
+                      label: const Text('Connect with Facebook'),
+                    ),
+                  ],
                 ),
-              ),
-
-            ],
+                const SizedBox(height: 50),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignupScreen()),
+                    );
+                  },
+                  child: Text.rich(
+                    TextSpan(
+                      text: "Don't have an account? ",
+                      children: [
+                        TextSpan(
+                          text: 'Sign up',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: TColor.primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

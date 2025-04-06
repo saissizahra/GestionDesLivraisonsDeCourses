@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
-import 'package:mkadia/views/home/widget/navbar.dart';
+import 'package:mkadia/services/authService.dart';
 
 class ForgetScreen extends StatelessWidget {
-  const ForgetScreen({super.key});
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +60,7 @@ class ForgetScreen extends StatelessWidget {
 
                   // Champ de saisie pour l'email
                   TextField(
+                    controller: _emailController,
                     decoration: InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(
@@ -72,13 +73,17 @@ class ForgetScreen extends StatelessWidget {
 
                   // Bouton pour confirmer l'email
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const BottomNavBar(),
-                        ),
-                      );
+                    onPressed: () async {
+                      try {
+                        await AuthService.forgotPassword(_emailController.text);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Reset password email sent')),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(e.toString())),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),

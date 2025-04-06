@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
+import 'package:mkadia/provider/UserProvider.dart';
 import 'package:mkadia/views/ReviewPage.dart';
 import 'package:provider/provider.dart';
 import 'package:mkadia/provider/cartProvider.dart';
@@ -20,10 +21,14 @@ class PaymentDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userId = userProvider.user?.id;
     final cartProvider = Provider.of<CartProvider>(context);
     // Pour l'ordre, nous utilisons la dernière réponse d'ordre si disponible
     final lastOrder = cartProvider.lastOrderResponse;
-    
+    if (userId == null) {
+      throw Exception('Utilisateur non connecté');
+    }
     return Container(
       height: 260,
       width: double.infinity,
@@ -146,7 +151,7 @@ class PaymentDetailsCard extends StatelessWidget {
               // Créer un objet ordre basé sur l'état actuel
               final orderData = {
                 'id': lastOrder != null ? lastOrder['order_id'] : DateTime.now().millisecondsSinceEpoch.toString(),
-                'user_id': 1, // Remplacer par l'ID réel de l'utilisateur
+                'user_id': userId, // Remplacer par l'ID réel de l'utilisateur
                 'total_amount': totalAmount,
                 'items': cartProvider.isOrderConfirmed 
                     ? cartProvider.confirmedItems.map((item) => {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mkadia/provider/OrderProvider.dart';
+import 'package:mkadia/provider/UserProvider.dart';
 import 'package:mkadia/services/OrderApiService.dart';
 import 'package:mkadia/services/api_service.dart';
 import 'dart:convert';
@@ -67,71 +68,60 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Map<String, dynamic>> confirmOrder(BuildContext context, double tax, double deliveryFee, String? promoCode, String deliveryAddress) async {
-    try {
-      final orderData = {
-        'user_id': 1,
-        'items': _cart.map((item) => {
-          'product_id': item['id'],
-          'quantity': item['quantity'],
-          'price': item['price'],
-          'total': (double.parse(item['price'].toString()) * item['quantity']).toString(),
-        }).toList(),
-        'tax': tax,
-        'delivery_fee': deliveryFee,
-        'total_amount': totalPrice() + tax + deliveryFee,
-        'order_date': DateTime.now().toIso8601String(),
-        'delivery_address': deliveryAddress, 
-      };
+Future<Map<String, dynamic>> confirmOrder(
+  BuildContext context,
+  double tax,
+  double deliveryFee,
+  String? promoCode,
+  String deliveryAddress,
+) async {
+  try {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userId = userProvider.user?.id;
+    
+    if (userId == null) throw Exception('Utilisateur non connecté');
+    if (deliveryAddress.isEmpty) throw Exception('Adresse requise');
+    if (_cart.isEmpty) throw Exception('Panier vide');
 
-      print('Données envoyées à l\'API : $orderData');
+    // 1. Sauvegardez les articles AVANT de vider le panier
+    _confirmedItems.clear();
+    _confirmedItems.addAll(_cart.map((item) => Map<String, dynamic>.from(item)));
 
-      // Envoyer la commande à l'API
-      final orderResponse = await OrderApiService.createOrder(orderData);
+    final orderData = {
+      'user_id': userId,
+      'items': _cart.map((item) => {
+        'product_id': item['id'],
+        'quantity': item['quantity'],
+        'price': item['price'],
+      }).toList(),
+      'delivery_address': deliveryAddress,
+      'tax': tax,
+      'delivery_fee': deliveryFee,
+      'total_amount': (totalPrice() + tax + deliveryFee).toStringAsFixed(2),
+      'order_status': 'confirmed',
+    };
 
-      print('Réponse de l\'API : $orderResponse');
+    debugPrint('Données envoyées: ${jsonEncode(orderData)}');
 
-      // Si un code promo a été appliqué, confirmer la commande et incrémenter le compteur
-      if (promoCode != null) {
-        await ApiService.confirmOrder(orderResponse['order_id'], promoCode);
-      }
+    final response = await OrderApiService.createOrder(orderData);
 
-      _lastOrderResponse = orderResponse;
-
-      // Copier les articles du panier dans confirmedItems
-      _confirmedItems.clear();
-      for (var item in _cart) {
-        _confirmedItems.add({
-          'id': item['id'],
-          'name': item['name'],
-          'price': item['price'],
-          'quantity': item['quantity'],
-          'image': item['image'], 
-          'image_url': item['image_url'] ?? item['image'],
-        });
-      }
-      
-      print('Items confirmed: $_confirmedItems');
-      
+    // 2. Ne vider le panier QUE si la commande est confirmée
+    if (response['success'] == true) {
       _cart.clear();
       _isOrderConfirmed = true;
       notifyListeners();
-      
-      print('Commande confirmée avec succès ! ID: ${orderResponse['order_id']}');
-      print('Panier vidé : $_cart');
-
-      // Définir la commande actuelle dans OrderProvider
-      if (context.mounted) {
-        final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-        orderProvider.setOrder(orderResponse);
-      }
-      
-      return orderResponse;
-    } catch (e) {
-      print('Erreur lors de la confirmation de la commande: $e');
-      throw Exception('Failed to confirm order: $e');
+    } else {
+      // Si échec, restaurer les articles confirmés
+      _confirmedItems.clear();
     }
+
+    return response;
+  } catch (e) {
+    _confirmedItems.clear(); // Nettoyer en cas d'erreur
+    debugPrint('Erreur création commande: $e');
+    rethrow;
   }
+}
   // Réinitialiser la commande
   void resetOrder() {
     _isOrderConfirmed = false;

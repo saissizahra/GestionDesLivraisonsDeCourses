@@ -3,7 +3,7 @@ import 'package:mkadia/provider/AdresseProvider.dart';
 import 'package:mkadia/provider/BottomNavProvider.dart';
 import 'package:mkadia/provider/PasswordProvider.dart';
 import 'package:mkadia/provider/PayementManager.dart';
-import 'package:mkadia/provider/UserPrivider.dart';
+import 'package:mkadia/provider/UserProvider.dart';
 import 'package:mkadia/provider/provi_confidentialit%C3%A9.dart';
 import 'package:mkadia/provider/searchProvider.dart';
 //import 'package:mkadia/views/location/providerlocation';
@@ -44,4 +44,3 @@ class MyApp extends StatelessWidget {
     );
 
 }
-

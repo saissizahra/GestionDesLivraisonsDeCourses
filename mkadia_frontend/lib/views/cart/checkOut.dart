@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
-import 'package:mkadia/models/delivery.dart';
 import 'package:mkadia/provider/OrderProvider.dart';
 import 'package:mkadia/provider/PayementManager.dart';
 import 'package:mkadia/provider/cartProvider.dart';

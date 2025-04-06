@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
-import 'package:mkadia/views/Delivery/TrackingPage.dart';
+import 'package:mkadia/views/Delivery/DeliveryTrackingPage.dart';
 
 class PaymentDetailsCard extends StatelessWidget {
   final double totalProducts;
   final double tax;
   final double deliveryFee;
-  final double totalAmount;
-  
-  
+  final double totalAmount;  
+  final Map<String, dynamic> orderData; // Même format que ReviewPage
 
   const PaymentDetailsCard({
     super.key,
@@ -16,10 +15,12 @@ class PaymentDetailsCard extends StatelessWidget {
     required this.tax,
     required this.deliveryFee,
     required this.totalAmount,
+    required this.orderData,
   });
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       height: 260,
       width: double.infinity,
@@ -122,7 +123,7 @@ class PaymentDetailsCard extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const DeliveryTrackingPage()),
+                MaterialPageRoute(builder: (context) => DeliveryTrackingPage(order: orderData,)),
               );
             },
             style: ElevatedButton.styleFrom(

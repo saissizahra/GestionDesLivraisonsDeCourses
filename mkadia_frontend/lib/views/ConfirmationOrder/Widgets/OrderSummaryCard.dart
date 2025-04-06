@@ -8,10 +8,12 @@ class OrderSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Debug the items we're getting
+    print('Items reçus: ${items.length}');
     print('OrderSummaryCard items: $items');
     
     // Afficher un message si aucun article n'est disponible
     if (items.isEmpty) {
+      print('Aucun item à afficher');
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
         padding: const EdgeInsets.all(15),

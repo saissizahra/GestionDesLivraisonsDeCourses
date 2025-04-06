@@ -1,74 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:mkadia/views/location/LocationService';
-import 'package:provider/provider.dart';
+import 'package:geocoding/geocoding.dart';
 
-class LocationProvider extends ChangeNotifier {
-  String? _city;
-  String? _capital;
-  double? _latitude;
-  double? _longitude;
-  bool _isLoading = false;
-  String? _error;
+class LocationProvider with ChangeNotifier {
+  Position? _currentPosition;
+  String? _currentCity;
+  String? _currentCountry;
 
-  String? get city => _city;
-  String? get capital => _capital;
-  double? get latitude => _latitude;
-  double? get longitude => _longitude;
-  bool get isLoading => _isLoading;
-  String? get error => _error;
-  bool get hasLocation => _city != null && _capital != null;
+  Position? get currentPosition => _currentPosition;
+  String? get currentCity => _currentCity;
+  String? get currentCountry => _currentCountry;
 
-  Future<bool> requestLocation() async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
+  Future<void> getCurrentLocation() async {
     try {
-      final position = await LocationService.getCurrentPosition();
-      if (position == null) {
-        _error = 'Impossible d\'obtenir la position actuelle';
-        _isLoading = false;
-        notifyListeners();
-        return false;
+      // Vérifier si les services de localisation sont activés
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw Exception('Les services de localisation sont désactivés.');
       }
 
-      final locationData = await LocationService.getLocationDetails(
-        position.latitude,
-        position.longitude,
+      // Obtenir la position actuelle
+      _currentPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
       );
 
-      _city = locationData.city;
-      _capital = locationData.capital;
-      _latitude = locationData.latitude;
-      _longitude = locationData.longitude;
-      _isLoading = false;
+      // Convertir les coordonnées en adresse
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        _currentPosition!.latitude,
+        _currentPosition!.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        _currentCity = place.locality ?? place.subAdministrativeArea ?? 'Inconnu';
+        _currentCountry = place.country;
+      }
+
       notifyListeners();
-      return true;
     } catch (e) {
-      _error = 'Erreur: $e';
-      _isLoading = false;
-      notifyListeners();
-      return false;
+      debugPrint('Erreur de localisation: $e');
+      rethrow;
     }
   }
 
-  void setManualLocation(String city, String capital, double lat, double lng) {
-    _city = city;
-    _capital = capital;
-    _latitude = lat;
-    _longitude = lng;
-    notifyListeners();
-  }
-
-  void clearLocation() {
-    _city = null;
-    _capital = null;
-    _latitude = null;
-    _longitude = null;
-    notifyListeners();
-  }
-
-  static LocationProvider of(BuildContext context) {
-    return context.read<LocationProvider>();
+  Future<void> updateLocation(Position position) async {
+    _currentPosition = position;
+    await getCurrentLocation();
   }
 }

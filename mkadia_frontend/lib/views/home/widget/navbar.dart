@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/provider/BottomNavProvider.dart';
+import 'package:mkadia/provider/OrderProvider.dart';
 import 'package:mkadia/views/Delivery/ConfirmationPage.dart';
-import 'package:mkadia/views/Delivery/TrackingPage.dart';
+import 'package:mkadia/views/Delivery/DeliveryTrackingPage.dart';
 import 'package:mkadia/views/home/HomeView.dart';
 import 'package:mkadia/views/ConfirmationOrder/OrderConfirmationPage.dart';
 import 'package:mkadia/views/profil/ProfilPage.dart';
@@ -16,15 +17,16 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  List<Widget> get views => [
-        const HomeView(),
-        _buildDeliveryNavigator(), 
-         const ProfilPage(), 
-      ];
-
   @override
   Widget build(BuildContext context) {
     final bottomNavProvider = Provider.of<BottomNavProvider>(context, listen: true);
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+
+    final List<Widget> views = [
+      const HomeView(),
+      _buildDeliveryNavigator(orderProvider.currentOrder),
+      const ProfilPage(),
+    ];
 
     return Scaffold(
       bottomNavigationBar: NavigationBar(
@@ -32,48 +34,44 @@ class _BottomNavBarState extends State<BottomNavBar> {
           bottomNavProvider.setCurrentIndex(index);
         },
         indicatorColor: Colors.amber,
-        selectedIndex: bottomNavProvider.currentIndex, 
+        selectedIndex: bottomNavProvider.currentIndex,
         destinations: const <Widget>[
-
           NavigationDestination(
             selectedIcon: Icon(Icons.home),
             icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
-
           NavigationDestination(
             selectedIcon: Icon(Icons.local_shipping),
             icon: Icon(Icons.local_shipping_outlined),
             label: 'Delivery',
           ),
-
           NavigationDestination(
             selectedIcon: Icon(Icons.person),
             icon: Icon(Icons.person_outline),
             label: 'Profile',
           ),
-          
         ],
       ),
       body: IndexedStack(
-        index: bottomNavProvider.currentIndex, 
+        index: bottomNavProvider.currentIndex,
         children: views,
       ),
     );
   }
 
-  Widget _buildDeliveryNavigator() {
+  Widget _buildDeliveryNavigator(Map<String, dynamic>? orderData) {
     return Navigator(
       onGenerateRoute: (RouteSettings settings) {
         return MaterialPageRoute(
           builder: (context) {
             switch (settings.name) {
               case '/deliveryTracking':
-                return const DeliveryTrackingPage();
+                return DeliveryTrackingPage(order: orderData ?? {});
               case '/deliveryConfirmation':
                 return const DeliveryConfirmationPage();
               default:
-                return const OrderConfirmationPage(); 
+                return OrderConfirmationPage(order: orderData);
             }
           },
         );

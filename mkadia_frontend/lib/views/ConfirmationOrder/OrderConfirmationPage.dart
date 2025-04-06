@@ -5,21 +5,19 @@ import 'package:mkadia/provider/cartProvider.dart';
 import 'package:mkadia/views/ConfirmationOrder/Widgets/DeliveryDetailsCard.dart';
 import 'package:mkadia/views/ConfirmationOrder/Widgets/OrderSummaryCard.dart';
 import 'package:mkadia/views/ConfirmationOrder/Widgets/PaymentDetailsCard.dart';
-import 'package:mkadia/views/ConfirmationOrder/Widgets/PaymentMethodCard.dart';
 import 'package:provider/provider.dart';
 
 class OrderConfirmationPage extends StatelessWidget {
-  const OrderConfirmationPage({super.key});
+  final Map<String, dynamic>? order;
 
+  const OrderConfirmationPage({super.key, this.order});
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
     final orderProvider = Provider.of<OrderProvider>(context);
     final order = orderProvider.currentOrder;
 
-    final itemsToDisplay = cartProvider.cart.isEmpty && cartProvider.isOrderConfirmed 
-        ? cartProvider.confirmedItems 
-        : cartProvider.cart;
+    final itemsToDisplay = cartProvider.confirmedItems;
 
     // Si aucune commande n'existe
     if (order == null && itemsToDisplay.isEmpty) {
@@ -113,10 +111,11 @@ class OrderConfirmationPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (order != null) DeliveryDetailsCard(order: order),  
-            const PaymentMethodCard(),
+            if (order != null) DeliveryDetailsCard(order: order), 
+            const SizedBox(height: 20,), 
             OrderSummaryCard(items: itemsToDisplay),
             PaymentDetailsCard(  
+              orderData: orderProvider.currentOrder ?? {'items': itemsToDisplay},
               totalProducts: totalProducts,
               tax: tax,
               deliveryFee: deliveryFee,

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mkadia/views/Delivery/TrackingPage.dart';
+import 'package:mkadia/views/Delivery/DeliveryTrackingPage.dart';
 import 'package:mkadia/views/home/widget/navbar.dart';
 
 class NavigationButtons extends StatelessWidget {
-  const NavigationButtons({super.key});
+  final Map<String, dynamic> orderData; // Ajoutez ce paramètre
+
+  const NavigationButtons({
+    super.key,
+    required this.orderData, // Marquez-le comme requis
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +21,7 @@ class NavigationButtons extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const DeliveryTrackingPage(),
+                  builder: (context) => DeliveryTrackingPage(order: orderData),
                 ),
               );
             },
