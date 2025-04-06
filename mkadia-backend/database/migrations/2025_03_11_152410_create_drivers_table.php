@@ -6,23 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up() {
-        Schema::create('drivers', function (Blueprint $table) {
+    public function up()
+    {
+        Schema::create('driver_profiles', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('phone')->unique();
-            $table->double('latitude');
-            $table->double('longitude');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('phone');
+            $table->decimal('latitude', 10, 8);
+            $table->decimal('longitude', 11, 8);
+            $table->boolean('is_available')->default(true);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('drivers');

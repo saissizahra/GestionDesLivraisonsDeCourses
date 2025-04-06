@@ -15,17 +15,17 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('driver_id')->nullable()->constrained('users')->onDelete('set null');
             $table->decimal('total_amount', 8, 2);
             $table->dateTime('order_date');
-            $table->string('delivery_address')->nullable(); 
-            $table->enum('order_status', ['pending', 'processing', 'completed', 'confirmed'])->default('pending');
+            $table->string('delivery_address');
+            $table->enum('order_status', ['pending', 'confirmed', 'assigned', 'in_progress', 'delivered', 'completed'])
+                  ->default('pending');
+            $table->dateTime('estimated_delivery_time')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('orders');

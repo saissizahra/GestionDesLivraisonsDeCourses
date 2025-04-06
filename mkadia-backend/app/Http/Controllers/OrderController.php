@@ -6,7 +6,10 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Promotion;
+use App\Models\DriverProfil;
+
 use App\Models\Delivery;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -17,37 +20,34 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         try {
-            // Valider les données
             $validatedData = $request->validate([
                 'user_id' => 'required|exists:users,id',
                 'items' => 'required|array',
                 'items.*.product_id' => 'required|exists:products,id',
                 'items.*.quantity' => 'required|integer|min:1',
                 'items.*.price' => 'required|numeric|min:0',
-                'tax' => 'required|numeric|min:0', // Ajouter la taxe
-                'delivery_fee' => 'required|numeric|min:0', // Ajouter les frais de livraison
+                'delivery_address' => 'required|string|max:255',
+                'tax' => 'required|numeric|min:0',
+                'delivery_fee' => 'required|numeric|min:0',
             ]);
     
             DB::beginTransaction();
     
-            // Calculer le montant total des produits (subtotal)
             $subtotal = 0;
             foreach ($request->items as $item) {
                 $subtotal += $item['price'] * $item['quantity'];
             }
     
-            // Calculer le montant total (subtotal + tax + delivery_fee)
             $totalAmount = $subtotal + $request->tax + $request->delivery_fee;
     
-            // Créer la commande
             $order = Order::create([
                 'user_id' => $request->user_id,
-                'total_amount' => $totalAmount, // Inclure tax et delivery_fee
+                'total_amount' => $totalAmount,
                 'order_date' => now(),
-                'order_status' => 'pending',
+                'delivery_address' => $request->delivery_address, // <-- Champ manquant !
+                'order_status' => 'confirmed',
             ]);
     
-            // Créer les éléments de la commande
             foreach ($request->items as $item) {
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -57,7 +57,6 @@ class OrderController extends Controller
                     'total' => $item['price'] * $item['quantity'],
                 ]);
     
-                // Mettre à jour le stock du produit
                 $product = Product::find($item['product_id']);
                 $product->quantity -= $item['quantity'];
                 $product->save();
@@ -68,8 +67,7 @@ class OrderController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Commande créée avec succès',
-                'order_id' => $order->id,
-                'total_amount' => $totalAmount,
+                'order' => $order,
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -91,60 +89,82 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::with(['user', 'items.product'])->findOrFail($id);
-        return response()->json($order);
-    }
-
-    public function updateStatus(Request $request, $id)
-    {
         try {
-            $order = Order::findOrFail($id);
-            $order->order_status = $request->order_status;
-            $order->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Statut de la commande mis à jour',
-                'order' => $order,
-            ]);
+            $order = Order::with([
+                'user.clientProfile',
+                'driver.driverProfile',
+                'items.product.category'
+            ])->findOrFail($id);
+    
+            $response = [
+                'id' => $order->id,
+                'order_status' => $order->order_status,
+                'driver_id' => $order->driver_id,
+                'driver' => $order->driver ? [
+                    'id' => $order->driver->id,
+                    'name' => $order->driver->name,
+                    'phone' => $order->driver->driverProfile->phone ?? 'Non disponible',
+                    'email' => $order->driver->email
+                ] : null,
+                'items' => $order->items->map(function ($item) {
+                    return [
+                        'product' => [
+                            'name' => $item->product->name,
+                            'image_url' => $item->product->image_url
+                        ],
+                        'quantity' => $item->quantity
+                    ];
+                })
+            ]; // <-- Cette accolade ferme le tableau $response
+    
+            return response()->json($response); // <-- Ajout du point-virgule manquant
+    
         } catch (\Exception $e) {
+            Log::error('Error fetching order details: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de la mise à jour du statut',
-                'error' => $e->getMessage(),
+                'message' => 'Failed to retrieve order details',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
 
-    public function getUserOrders($userId)
-    {
-        $orders = Order::with(['items.product.category'])
-            ->where('user_id', $userId)
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($order) {
-                return [
-                    'id' => $order->id,
-                    'total_amount' => $order->total_amount,
-                    'order_date' => $order->order_date,
-                    'order_status' => $order->order_status,
-                    'items' => $order->items->map(function ($item) {
-                        return [
-                            'product_id' => $item->product_id,
-                            'quantity' => $item->quantity,
-                            'price' => $item->price,
-                            'product' => [
-                                'name' => $item->product->name,
-                                'image_url' => $item->product->image_url,
-                                'category' => $item->product->category,
-                            ],
-                        ];
-                    }),
-                ];
-            });
-    
-        return response()->json(['orders' => $orders]);
-    }
+// Modifier cette méthode pour inclure le driver dans les données
+public function getUserOrders($userId)
+{
+    $orders = Order::with(['items.product.category', 'driver'])
+        ->where('user_id', $userId)
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'total_amount' => $order->total_amount,
+                'order_date' => $order->order_date,
+                'order_status' => $order->order_status,
+                'delivery_address' => $order->delivery_address,
+                'driver' => $order->driver ? [
+                    'id' => $order->driver->id,
+                    'name' => $order->driver->name,
+                    'phone' => $order->driver->driverProfile->phone ?? 'Non spécifié'
+                ] : null,
+                'items' => $order->items->map(function ($item) {
+                    return [
+                        'product_id' => $item->product_id,
+                        'quantity' => $item->quantity,
+                        'price' => $item->price,
+                        'product' => [
+                            'name' => $item->product->name,
+                            'image_url' => $item->product->image_url,
+                            'category' => $item->product->category,
+                        ],
+                    ];
+                }),
+            ];
+        });
+
+    return response()->json(['orders' => $orders]);
+}
     public function confirmOrder(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -194,4 +214,123 @@ class OrderController extends Controller
             'order' => $order,
         ]);
     }
+        // Assigner un livreur à une commande
+
+        public function assignDriver(Request $request, $orderId)
+        {
+            $request->validate([
+                'driver_id' => 'required|exists:users,id'
+            ]);
+        
+            $order = Order::findOrFail($orderId);
+            
+            $order->update([
+                'driver_id' => $request->driver_id,
+                'order_status' => 'assigned'
+            ]);
+        
+            // Recharge la commande avec toutes les relations
+            $order->load(['user', 'driver.driverProfile', 'items.product']);
+        
+            return response()->json([
+                'success' => true,
+                'message' => 'Livreur assigné avec succès',
+                'order' => $order
+            ]);
+        }
+    
+    
+
+    // Mettre à jour le statut de la commande
+    public function updateStatus(Request $request, $orderId)
+    {
+        try {
+            $order = Order::findOrFail($orderId);
+            
+            $request->validate([
+                'status' => 'required|in:in_progress,delivered'
+            ]);
+            
+            $order->update(['order_status' => $request->status]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Statut mis à jour avec succès',
+                'order' => $order
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour du statut',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Récupérer les commandes pour l'admin
+    public function getAdminOrders()
+    {
+        $orders = Order::with(['user', 'driver', 'items.product'])
+            ->whereIn('order_status', ['confirmed', 'assigned', 'in_progress'])
+            ->get();
+            
+        return response()->json($orders);
+    }
+
+    // Récupérer les commandes pour un livreur
+    public function getDriverOrders($driverId)
+    {
+        $orders = Order::with(['user:id,name', 'items.product:id,name,image_url', 'driver'])
+            ->where('driver_id', $driverId)
+            ->whereIn('order_status', ['assigned', 'in_progress', 'delivered'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'order_status' => $order->order_status ?? 'inconnu', // Utilisez toujours order_status
+                    'status' => $order->order_status ?? 'inconnu', // Pour compatibilité
+                    'total_amount' => $order->total_amount ?? 0,
+                    'delivery_address' => $order->delivery_address ?? 'Adresse inconnue',
+                    'created_at' => $order->created_at->format('Y-m-d H:i'),
+                    'phone' => $order->user->clientProfile->phone ?? 'Non spécifié',
+                    'driver' => $order->driver ? [
+                        'id' => $order->driver->id,
+                        'name' => $order->driver->name,
+                        'phone' => $order->driver->driverProfile->phone ?? 'Non spécifié'
+                    ] : null,
+                    'items' => $order->items->map(function ($item) {
+                        return [
+                            'product_name' => $item->product->name ?? 'Produit inconnu',
+                            'product_image' => $item->product->image_url ?? '',
+                            'quantity' => $item->quantity ?? 0,
+                            'price' => $item->price ?? 0,
+                            'total' => $item->total ?? 0
+                        ];
+                    })->toArray()
+                ];
+            });
+            
+        return response()->json($orders);
+    }
+    public function confirmDelivery(Request $request, $orderId)
+{
+    try {
+        $order = Order::findOrFail($orderId);
+        $order->update(['order_status' => 'completed']);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Livraison confirmée avec succès',
+            'order' => $order
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la confirmation',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 }

@@ -11,10 +11,12 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'driver_id',
         'total_amount',
         'order_date',
-        'delivery_id',
+        'delivery_address', 
         'order_status',
+        'estimated_delivery_time',
     ];
 
     public function user()
@@ -22,13 +24,15 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Relation avec le livreur
+    public function driver()
+    {
+        return $this->belongsTo(User::class, 'driver_id');
+    }
+
     public function items()
     {
         return $this->hasMany(OrderItem::class);
     }
-    // Relation avec la livraison
-    public function delivery()
-    {
-        return $this->hasOne(Delivery::class);
-    }
+
 }

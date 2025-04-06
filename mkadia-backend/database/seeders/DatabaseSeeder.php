@@ -14,11 +14,13 @@ class DatabaseSeeder extends Seeder
     {
         // Appeler uniquement le seeder pour les utilisateurs
         $this->call([
-            UsersTableSeeder::class,
+            UserSeeder::class,
             CategorySeeder::class,
             ProductSeeder::class,
             PromotionsSeeder::class,
-            DriverSeeder::class
+            DriverSeeder::class,
+            ClientProfileSeeder::class,
+            AdminUserSeeder::class,
 
         ]);
     }

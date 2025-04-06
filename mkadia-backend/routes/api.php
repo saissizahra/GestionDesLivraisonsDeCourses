@@ -10,23 +10,50 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\DeliveryController;
 
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+use App\Http\Controllers\DriverController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Api\UserController;
+
+Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'getUser']);
+
+Route::get('/livreur/{id}', [DriverController::class, 'show']);
+Route::put('/livreur/{id}', [DriverController::class, 'update']);
+
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 // Route protégée par Sanctum (exemple d'authentification)
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::middleware(['auth:sanctum', 'driver'])->group(function () {
+    Route::put('/driver/availability', [AuthController::class, 'updateDriverAvailability']);
+    
+    Route::get('/driver/status', function (Request $request) {
+        return response()->json([
+            'is_available' => $request->user()->driverProfile->is_available
+        ]);
+    });
+});
+
+Route::get('/admin/orders', [OrderController::class, 'getAdminOrders']);
+Route::post('/orders/{id}/assign-driver', [OrderController::class, 'assignDriver']);
+
+Route::get('/drivers/{driverId}/orders', [OrderController::class, 'getDriverOrders']);
+
+Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus']);
 Route::get('/products/search', [ProductController::class, 'search']);
+
+// Routes pour les drivers
+Route::get('/drivers', [DriverController::class, 'index']); // Liste des drivers
+Route::get('/drivers/{driverId}', [DriverController::class, 'show']); // Détail d'un driver
+Route::post('/drivers', [DriverController::class, 'store']); // Création d'un driver (si nécessaire)
+Route::put('/drivers/{driverId}', [DriverController::class, 'update']); // Mise à jour
+Route::delete('/drivers/{driverId}', [DriverController::class, 'destroy']); // Suppression
 
 // Routes pour les produits 
 Route::get('/products', [ProductController::class, 'index']);
@@ -50,9 +77,7 @@ Route::post('/promotions/apply', [PromotionController::class, 'applyCode']);
 
 // Routes pour les évaluations
 Route::post('reviews', [ReviewController::class, 'store']);
-Route::get('reviews/{id}', [ReviewController::class, 'show']);
+Route::get('    reviews/{id}', [ReviewController::class, 'show']);
 Route::get('products/{productId}/reviews', [ReviewController::class, 'getProductReviews']);
 Route::get('users/{userId}/reviews', [ReviewController::class, 'getUserReviews']);
 
-Route::post('/deliveries', [DeliveryController::class, 'store']);
-Route::put('/deliveries/{id}/status', [DeliveryController::class, 'updateStatus']);

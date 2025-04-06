@@ -1,29 +1,50 @@
 <?php
+// database/seeders/DriverSeeder.php
 
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Driver;
+use App\Models\DriverProfile;
+use App\Models\User;
 
 class DriverSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        Driver::create([
-            'name' => 'John Doe',
-            'phone' => '0612345678',
-            'latitude' => 34.0522,
-            'longitude' => -118.2437,
-        ]);
+        $drivers = [
+            [
+                'name' => 'John Driver',
+                'email' => 'driver1@example.com',
+                'phone' => '0612345678',
+                'latitude' => 48.8566,
+                'longitude' => 2.3522,
+                'is_available' => true
+            ],
+            [
+                'name' => 'Jane Driver',
+                'email' => 'driver2@example.com',
+                'phone' => '0698765432',
+                'latitude' => 48.8534,
+                'longitude' => 2.3488,
+                'is_available' => false
+            ]
+        ];
 
-        Driver::create([
-            'name' => 'Jane Smith',
-            'phone' => '0698765432',
-            'latitude' => 36.1699,
-            'longitude' => -115.1398,
-        ]);
+        foreach ($drivers as $driverData) {
+            $user = User::create([
+                'name' => $driverData['name'],
+                'email' => $driverData['email'],
+                'password' => bcrypt('password'),
+                'role' => 'driver',
+            ]);
+
+            DriverProfile::create([
+                'user_id' => $user->id,
+                'phone' => $driverData['phone'],
+                'latitude' => $driverData['latitude'],
+                'longitude' => $driverData['longitude'],
+                'is_available' => $driverData['is_available']
+            ]);
+        }
     }
 }
