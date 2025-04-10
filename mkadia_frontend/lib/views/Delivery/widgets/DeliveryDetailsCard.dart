@@ -7,12 +7,22 @@ class DeliveryDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Extraire les données de la commande
-    final String orderId = order['id'].toString(); // Utiliser directement comme String
-    final String address = order['delivery_address'] ?? 'Adresse non spécifiée'; // Valeur par défaut si null
-    final Map<String, dynamic> delivery = order['delivery'];
-    final String estimatedDeliveryTime = delivery['estimated_delivery_time'];
-    final Map<String, dynamic> driver = delivery['driver'];
+    // Extraire les données de la commande avec vérification de null
+    final String orderId = order['id']?.toString() ?? 'N/A';
+    final String address = order['delivery_address'] ?? 'Adresse non spécifiée';
+    
+    // Vérifier si delivery existe
+    final Map<String, dynamic>? delivery = order['delivery'] as Map<String, dynamic>?;
+    
+    // Valeurs par défaut si delivery est null
+    String estimatedDeliveryTime = 'Non disponible';
+    Map<String, dynamic>? driver;
+    
+    // Si delivery existe, récupérer les informations
+    if (delivery != null) {
+      estimatedDeliveryTime = delivery['estimated_delivery_time'] ?? 'Non disponible';
+      driver = delivery['driver'] as Map<String, dynamic>?;
+    }
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
@@ -39,9 +49,11 @@ class DeliveryDetailsCard extends StatelessWidget {
             children: [
               const Icon(Icons.location_on, size: 20, color: Colors.grey),
               const SizedBox(width: 10),
-              Text(
-                address,
-                style: const TextStyle(fontSize: 14),
+              Expanded(
+                child: Text(
+                  address,
+                  style: const TextStyle(fontSize: 14),
+                ),
               ),
             ],
           ),
@@ -64,31 +76,33 @@ class DeliveryDetailsCard extends StatelessWidget {
           ),
           const SizedBox(height: 15),
 
-          // Section pour le livreur
-          const Text(
-            'Delivered by:',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 5),
-          Row(
-            children: [
-              const Icon(Icons.person, size: 40, color: Colors.grey), // Icône du livreur
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    driver['name'], // Nom du livreur
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-                  const Text(
-                    'Delivered',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          // Section pour le livreur - uniquement si driver existe
+          if (driver != null) ...[
+            const Text(
+              'Delivered by:',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 5),
+            Row(
+              children: [
+                const Icon(Icons.person, size: 40, color: Colors.grey),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      driver['name'] ?? 'Nom non disponible',
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    ),
+                    const Text(
+                      'Delivered',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

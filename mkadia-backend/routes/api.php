@@ -69,7 +69,8 @@ Route::get('/orders/{id}', [OrderController::class, 'show']); // Détails d'une 
 Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus']); // Mise à jour statut
 Route::get('/users/{userId}/orders', [OrderController::class, 'getUserOrders']); // Commandes d'un user
 Route::post('/orders/confirm', [OrderController::class, 'confirmOrder']);
-
+// Ajoutez cette route
+Route::put('/orders/{order}/confirm-delivery', [OrderController::class, 'confirmDelivery']);
 // Routes pour les promotions
 Route::get('/promotions', [PromotionController::class, 'index']);
 Route::post('/promotions/verify', [PromotionController::class, 'verifyCode']);

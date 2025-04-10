@@ -34,7 +34,7 @@ class SearchLoc extends StatelessWidget {
                   child: TextField(
                     enabled: false, // Désactive la saisie directe
                     decoration: InputDecoration(
-                      hintText: 'Search in Mkadia',
+                      hintText: 'Rechercher sur Mkadia',
                       hintStyle: TextStyle(color: TColor.placeholder),
                       prefixIcon: const Icon(Icons.search, color: Colors.grey),
                       border: OutlineInputBorder(
@@ -89,49 +89,6 @@ class SearchLoc extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 15),
-
-        // Affichage de la localisation
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.location_on,
-              color: Colors.white,
-              size: 20,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Current Location',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    fontFamily: "Montserrat",
-                    color: TColor.secondaryText,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-
-        // Affichage de "Safi.Marrakech" avec du padding
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Safi.Marrakech',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
-                fontFamily: "Montserrat",
-                color: TColor.primary,
-              ),
-            ),
-          ],
-        ),
       ],
     );
   }

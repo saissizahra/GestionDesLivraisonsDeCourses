@@ -136,7 +136,6 @@ class DeliveryConfirmationPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (order != null) DeliveryDetailsCard(order: order),            
-            const PaymentMethodCard(),
             OrderSummaryCard(items: itemsToDisplay),
             PaymentDetailsCard(  
               totalProducts: totalProducts,

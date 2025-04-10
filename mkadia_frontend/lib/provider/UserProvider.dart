@@ -66,29 +66,41 @@ Future<void> login(String email, String password) async {
     }
   }
 
+// Dans UserProvider
 Future<void> logout() async {
   try {
-    // Appel API pour logout
+    if (_token == null) {
+      debugPrint('No token available');
+      return;
+    }
+
+    // DEBUG: Affichez le token pour vérification
+    debugPrint('Token used for logout: $_token');
+    
     final response = await http.post(
       Uri.parse('http://10.0.2.2:8000/api/logout'),
       headers: {
         'Authorization': 'Bearer $_token',
         'Accept': 'application/json',
+        'Content-Type': 'application/json',
       },
     );
+
+    debugPrint('Logout status: ${response.statusCode}');
+    debugPrint('Response body: ${response.body}');
 
     if (response.statusCode == 200) {
       _user = null;
       _token = null;
-      notifyListeners();
     } else {
-      throw Exception('Logout failed');
+      throw Exception('Logout failed: ${response.body}');
     }
   } catch (e) {
     debugPrint('Logout error: $e');
-    // Même en cas d'erreur API, on nettoie localement
+    // Force logout local en cas d'erreur
     _user = null;
     _token = null;
+  } finally {
     notifyListeners();
   }
 }

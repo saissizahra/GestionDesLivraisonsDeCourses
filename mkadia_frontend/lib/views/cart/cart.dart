@@ -38,7 +38,7 @@ class _CartState extends State<Cart> {
               },
             ),
             title: Text(
-              "My Cart",
+              "Mon Panier",
               style: TextStyle(
                 color: TColor.primary,
                 fontSize: 22,
@@ -68,7 +68,7 @@ class _CartState extends State<Cart> {
                       const Column(
                         children: [
                           Text(
-                            "Your Cart is empty",
+                            "Votre panier est vide",
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -78,7 +78,7 @@ class _CartState extends State<Cart> {
                           ),
                           SizedBox(height: 20,),
                           Text(
-                            "Today is good day for you ",
+                            "Aujourd'hui est un bon jour",
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -87,7 +87,7 @@ class _CartState extends State<Cart> {
                             ),
                           ),
                           Text(
-                            "to make a choice ",
+                            "pour faire votre choix ",
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,

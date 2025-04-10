@@ -8,7 +8,14 @@ class OrderProvider with ChangeNotifier {
   List<Map<String, dynamic>> get assignedOrders => _assignedOrders;
 
   final TextEditingController addressController = TextEditingController();
-
+  Map<String, dynamic>? _temporaryOrder;
+  
+  void setTemporaryOrder(Map<String, dynamic> order) {
+    _temporaryOrder = order;
+    notifyListeners();
+  }
+  
+  Map<String, dynamic>? get temporaryOrder => _temporaryOrder;
   void setOrder(Map<String, dynamic> order) {
     _currentOrder = order;
         if (addressController.text.isNotEmpty) {

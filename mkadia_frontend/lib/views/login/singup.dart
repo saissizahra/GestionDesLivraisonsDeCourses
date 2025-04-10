@@ -1,23 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
-import 'package:mkadia/services/authService.dart';
-import 'package:mkadia/views/ajouter/DriverOrdersPage.dart';
-import 'package:provider/provider.dart';
-import 'package:mkadia/provider/UserProvider.dart';
-import 'package:mkadia/models/user.dart'; // Importez la classe User ici
 import 'package:mkadia/views/home/widget/navbar.dart';
-import 'package:mkadia/views/login/login.dart';
+import 'login.dart'; 
 
 class SignupScreen extends StatelessWidget {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _roleController = TextEditingController();
+  const SignupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -54,9 +44,8 @@ class SignupScreen extends StatelessWidget {
 
               // Nom d'utilisateur
               TextField(
-                controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: 'Username',
+                  labelText: 'Nom d\'utilisateur',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -65,9 +54,21 @@ class SignupScreen extends StatelessWidget {
               ),
               const SizedBox(height: 15),
 
+              // Numéro de téléphone
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Numéro de téléphone',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  prefixIcon: const Icon(Icons.phone),
+                ),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 15),
+
               // Email
               TextField(
-                controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(
@@ -81,81 +82,33 @@ class SignupScreen extends StatelessWidget {
 
               // Mot de passe
               TextField(
-                controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: 'Mot de passe',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   prefixIcon: const Icon(Icons.lock),
                 ),
               ),
-              const SizedBox(height: 15),
-
-              // Rôle
-              DropdownButtonFormField<String>(
-                value: 'client',
-                onChanged: (String? newValue) {
-                  _roleController.text = newValue!;
-                },
-                items: <String>['client', 'driver']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  labelText: 'Role',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
               const SizedBox(height: 30),
 
               // Bouton "S'inscrire"
               ElevatedButton(
-                onPressed: () async {
-                  try {
-                    final response = await AuthService.register(
-                      _nameController.text,
-                      _emailController.text,
-                      _passwordController.text,
-                      _roleController.text,
-                    );
-
-                    userProvider.setUser(User.fromJson(response['user']));
-                    userProvider.setToken(response['token']);
-
-                    if (response['user']['role'] == 'driver') {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const BottomNavBar(),
-                        ),
-                      );
-                    } else {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BottomNavBar(),
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(e.toString())),
-                    );
-                  }
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BottomNavBar(),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                   backgroundColor: TColor.primaryColor,
                 ),
                 child: const Text(
-                  'Register',
+                  'S\'inscrire',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -164,70 +117,17 @@ class SignupScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Texte "Or register with"
+              // Texte "Or sign with"
               const Text(
-                "Or register with",
+                "Ou s'inscrire avec",
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.black54,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 20),
-
-              // Boutons de connexion avec Google et Facebook
-              Column(
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      // TODO: Action pour Google
-                    },
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      side: BorderSide(color: TColor.primaryColor),
-                      backgroundColor: const Color.fromARGB(50, 255, 255, 255),
-                    ),
-                    icon: Icon(
-                      Icons.account_circle,
-                      color: TColor.primaryColor,
-                      size: 30,
-                    ),
-                    label: const Text(
-                      'Connect with Google',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      // TODO: Action pour Facebook
-                    },
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      side: BorderSide(color: TColor.primaryColor),
-                      backgroundColor: const Color.fromARGB(50, 255, 255, 255),
-                    ),
-                    icon: Icon(
-                      Icons.facebook,
-                      color: Colors.blue[900],
-                      size: 30,
-                    ),
-                    label: const Text(
-                      'Connect with Facebook',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
               const SizedBox(height: 50),
 
-              // Texte "Already have an account? Sign in"
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -239,14 +139,14 @@ class SignupScreen extends StatelessWidget {
                 },
                 child: Text.rich(
                   TextSpan(
-                    text: "Already have an account? ",
+                    text: "Déjà un compte ? ",
                     style: TextStyle(
                       fontSize: 15,
                       color: TColor.primaryColor,
                     ),
                     children: [
                       TextSpan(
-                        text: 'Sign in',
+                        text: 'Se connecter',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -258,6 +158,7 @@ class SignupScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
+
             ],
           ),
         ),

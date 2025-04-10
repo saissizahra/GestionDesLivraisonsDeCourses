@@ -79,7 +79,7 @@ class _DetailState extends State<Detail> {
               onPressed: () => Navigator.pop(context),
             ),
             title: Text(
-              "Product Details",
+              "Détails du produit",
               style: TextStyle(
                 color: TColor.primary,
                 fontSize: 22,

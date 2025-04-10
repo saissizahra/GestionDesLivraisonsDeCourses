@@ -77,7 +77,7 @@ class PromoDetailsPage extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
             ),
             title: Text(
-              "Promotion Details",
+              "Détails de la promotion",
               style: TextStyle(
                 color: TColor.primary,
                 fontSize: 22,

@@ -69,7 +69,7 @@ class ProductCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  "${product['price']} Mad",
+                  "${product['price']} MAD",
                   style: TextStyle(
                     fontFamily: "ZabalDemo",
                     fontWeight: FontWeight.bold,

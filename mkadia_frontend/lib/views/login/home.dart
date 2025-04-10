@@ -49,7 +49,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20), 
                       const Text(
-                        'No more waiting for your groceries to be delivered',
+                        'Plus besoin d\'attendre pour vos courses livrées',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontWeight: FontWeight.w300,
@@ -82,7 +82,7 @@ class HomeScreen extends StatelessWidget {
                           
                         ),
                         child: const Text(
-                          'Get Started',
+                          'Commencer',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,

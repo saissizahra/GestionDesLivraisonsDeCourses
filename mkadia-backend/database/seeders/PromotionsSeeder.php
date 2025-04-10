@@ -28,7 +28,7 @@ class PromotionsSeeder extends Seeder
             'is_active' => true,
             'start_date' => Carbon::now(), // Débute aujourd'hui
             'end_date' => Carbon::now()->addMonth(), // Expire dans 1 mois
-            'image_url' => 'http://10.0.2.2:8000/img/promo35%midmouth.png',
+            'image_url' => 'http://10.0.2.2:8000/img/REDUCTIONDETE.png',
         ]);
 
         Promotion::create([
@@ -38,12 +38,12 @@ class PromotionsSeeder extends Seeder
             'type' => 'percentage',
             'value' => 10.00,
             'min_purchase_amount' => 0.00,
-            'usage_limit' => 4,
+            'usage_limit' => 8,
             'usage_count' => 0,
             'is_active' => true,
             'start_date' => Carbon::now(), // Débute aujourd'hui
             'end_date' => Carbon::now()->addMonths(6), // Expire dans 6 mois
-            'image_url' => 'http://10.0.2.2:8000/img/promo35%midmouth.png',
+            'image_url' => 'http://10.0.2.2:8000/img/4.png',
         ]);
 
         // Promotions de type "fixed_amount"
@@ -54,12 +54,12 @@ class PromotionsSeeder extends Seeder
             'type' => 'fixed_amount',
             'value' => 15.00,
             'min_purchase_amount' => 100.00,
-            'usage_limit' => 6,
+            'usage_limit' => 10,
             'usage_count' => 0,
             'is_active' => true,
             'start_date' => Carbon::now(), // Débute aujourd'hui
             'end_date' => Carbon::now()->addWeeks(2), // Expire dans 2 semaines
-            'image_url' => 'http://10.0.2.2:8000/img/promo35%midmouth.png',
+            'image_url' => 'http://10.0.2.2:8000/img/5.png',
         ]);
 
         Promotion::create([
@@ -69,7 +69,7 @@ class PromotionsSeeder extends Seeder
             'type' => 'fixed_amount',
             'value' => 5.00,
             'min_purchase_amount' => 20.00,
-            'usage_limit' => 8, // Pas de limite
+            'usage_limit' => 10, // Pas de limite
             'usage_count' => 0,
             'is_active' => true,
             'start_date' => Carbon::now(), // Débute aujourd'hui
@@ -90,7 +90,7 @@ class PromotionsSeeder extends Seeder
             'is_active' => true,
             'start_date' => Carbon::now(), // Débute aujourd'hui
             'end_date' => Carbon::now()->addWeek(), // Expire dans 1 semaine
-            'image_url' => 'http://10.0.2.2:8000/img/promo35%midmouth.png',
+            'image_url' => 'http://10.0.2.2:8000/img/FREEDELIVERY.png',
         ]);
 
         Promotion::create([
@@ -105,7 +105,7 @@ class PromotionsSeeder extends Seeder
             'is_active' => true,
             'start_date' => Carbon::now(), // Débutfze aujourd'hui
             'end_date' => Carbon::now()->addMonth(), // Expire dans 1 mois
-            'image_url' => 'http://10.0.2.2:8000/img/promo35%midmouth.png',
+            'image_url' => 'http://10.0.2.2:8000/img/pLIVRAISONSUP50.png',
         ]);
     }
 }

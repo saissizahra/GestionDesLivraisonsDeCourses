@@ -38,7 +38,7 @@ class ForgetScreen extends StatelessWidget {
 
                   // Titre de la page
                   Text(
-                    'Forgot Password',
+                    'Mot de passe oublié',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -49,7 +49,7 @@ class ForgetScreen extends StatelessWidget {
 
                   // Texte d'instruction
                   const Text(
-                    "Please enter your email to reset your password.",
+                    "Veuillez entrer votre email pour réinitialiser votre mot de passe.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16,
@@ -77,7 +77,7 @@ class ForgetScreen extends StatelessWidget {
                       try {
                         await AuthService.forgotPassword(_emailController.text);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Reset password email sent')),
+                          SnackBar(content: Text('Email de réinitialisation envoyé')),
                         );
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -90,7 +90,7 @@ class ForgetScreen extends StatelessWidget {
                       backgroundColor: TColor.primaryColor,
                     ),
                     child: const Text(
-                      'Confirm Email',
+                      'Confirmer l\'email',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,

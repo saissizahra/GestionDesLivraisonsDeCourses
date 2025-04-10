@@ -6,20 +6,28 @@ class OrderApiService {
   static const String baseUrl = 'http://10.0.2.2:8000/api';
 
   // Créer une nouvelle commande
-  static Future<Map<String, dynamic>> createOrder(Map<String, dynamic> orderData) async {
+static Future<Map<String, dynamic>> createOrder(Map<String, dynamic> orderData) async {
+  try {
     final response = await http.post(
       Uri.parse('$baseUrl/orders'),
-      headers: {'Content-Type': 'application/json'},
       body: jsonEncode(orderData),
+      headers: {'Content-Type': 'application/json'},
     );
 
+    final responseData = jsonDecode(response.body);
+    
+    debugPrint('Réponse API: ${response.statusCode} - ${response.body}');
+
     if (response.statusCode == 201) {
-      return jsonDecode(response.body);
+      return responseData;
     } else {
-      print('Erreur lors de la création de la commande: ${response.body}');
-      throw Exception('Failed to create order');
+      throw Exception(responseData['message'] ?? 'Failed to create order');
     }
+  } catch (e) {
+    debugPrint('Error in createOrder: $e');
+    rethrow;
   }
+}
     static Future<List<dynamic>> getAdminOrders() async {
     final response = await http.get(Uri.parse('$baseUrl/admin/orders'));
     
@@ -62,18 +70,28 @@ static Future<List<Map<String, dynamic>>> getDriverOrders(int driverId) async {
     }
   }
     // Méthode spécifique pour que le client confirme la livraison
-  static Future<Map<String, dynamic>> confirmDelivery(int orderId) async {
+static Future<Map<String, dynamic>> confirmDelivery(int orderId) async {
+  try {
     final response = await http.put(
       Uri.parse('$baseUrl/orders/$orderId/confirm-delivery'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
     );
+
+    debugPrint('Confirm Delivery Response: ${response.statusCode} - ${response.body}');
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Échec de la confirmation de livraison: ${response.statusCode}');
+      throw Exception('Failed to confirm delivery: ${response.statusCode}');
     }
+  } catch (e) {
+    debugPrint('Error in confirmDelivery: $e');
+    rethrow;
   }
+}
   // Mettre à jour le statut d'une commande
   // Mettre à jour le statut d'une commande
   static Future<Map<String, dynamic>> updateOrderStatus(int orderId, String status) async {
@@ -119,15 +137,33 @@ static Future<List<Map<String, dynamic>>> getDriverOrders(int driverId) async {
   }
 
   // Récupérer les détails d'une commande
-  static Future<Map<String, dynamic>> getOrderDetails(int orderId) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/orders/$orderId'),
-    );
+static Future<Map<String, dynamic>> getOrderDetails(int orderId) async {
+  final response = await http.get(
+    Uri.parse('$baseUrl/orders/$orderId?with_items=true&with_driver=true'),
+  );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load order details');
-    }
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    
+    // Transformation des données pour uniformité
+    return {
+      'id': data['id'],
+      'items': data['items']?.map((item) => {
+        'product': {
+          'name': item['product']['name'],
+          'image_url': item['product']['image_url'],
+        },
+        'quantity': item['quantity'],
+        'price': item['price'],
+      }).toList(),
+      'driver': data['driver'] ?? {
+        'name': 'A assignee',
+        'phone': '--',
+      },
+      'order_status': data['order_status'],
+      'created_at': data['created_at'],
+    };
   }
+  throw Exception('Failed to load order details');
+}
 }

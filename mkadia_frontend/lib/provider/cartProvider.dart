@@ -77,15 +77,12 @@ Future<Map<String, dynamic>> confirmOrder(
 ) async {
   try {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
     final userId = userProvider.user?.id;
     
     if (userId == null) throw Exception('Utilisateur non connecté');
     if (deliveryAddress.isEmpty) throw Exception('Adresse requise');
     if (_cart.isEmpty) throw Exception('Panier vide');
-
-    // 1. Sauvegardez les articles AVANT de vider le panier
-    _confirmedItems.clear();
-    _confirmedItems.addAll(_cart.map((item) => Map<String, dynamic>.from(item)));
 
     final orderData = {
       'user_id': userId,
@@ -98,27 +95,38 @@ Future<Map<String, dynamic>> confirmOrder(
       'tax': tax,
       'delivery_fee': deliveryFee,
       'total_amount': (totalPrice() + tax + deliveryFee).toStringAsFixed(2),
-      'order_status': 'confirmed',
+      'promo_code': promoCode,
     };
 
-    debugPrint('Données envoyées: ${jsonEncode(orderData)}');
+    debugPrint('Envoi au serveur: ${jsonEncode(orderData)}');
 
-    final response = await OrderApiService.createOrder(orderData);
+    final apiResponse = await OrderApiService.createOrder(orderData);
 
-    // 2. Ne vider le panier QUE si la commande est confirmée
-    if (response['success'] == true) {
-      _cart.clear();
-      _isOrderConfirmed = true;
-      notifyListeners();
-    } else {
-      // Si échec, restaurer les articles confirmés
+    // Vérification améliorée
+    if (apiResponse['success'] == true && apiResponse['order'] != null) {
+      // 1. Sauvegarder les items confirmés AVANT de vider le panier
       _confirmedItems.clear();
+      _confirmedItems.addAll(_cart.map((e) => Map<String,dynamic>.from(e)));
+      
+      // 2. Vider le panier
+      _cart.clear();
+      
+      // 3. Mettre à jour le dernier ordre
+      _lastOrderResponse = apiResponse['order'];
+      _isOrderConfirmed = true;
+      
+      // 4. Mettre à jour l'orderProvider
+      orderProvider.setOrder(apiResponse['order']);
+      orderProvider.addressController.text = deliveryAddress;
+      
+      notifyListeners();
+      return apiResponse['order'];
+    } else {
+      throw Exception(apiResponse['message'] ?? 'La commande n\'a pas été créée côté serveur');
     }
-
-    return response;
   } catch (e) {
-    _confirmedItems.clear(); // Nettoyer en cas d'erreur
-    debugPrint('Erreur création commande: $e');
+    _confirmedItems.clear();
+    debugPrint('Erreur confirmOrder: $e');
     rethrow;
   }
 }

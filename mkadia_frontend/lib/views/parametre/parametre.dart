@@ -34,7 +34,7 @@ class ParametrePageState extends State<ParametrePage> {
             backgroundColor: TColor.primaryText,
             elevation: 0,
             title: Text(
-              "Parametre",
+              "Paramètres",
               style: TextStyle(
                 color: TColor.primary,
                 fontSize: 22,
@@ -42,6 +42,14 @@ class ParametrePageState extends State<ParametrePage> {
               ),
             ),
             centerTitle: true,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+                size: 30,
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
           ),
         ),
       ),
@@ -62,44 +70,6 @@ class ParametrePageState extends State<ParametrePage> {
                     });
                   },
                   activeColor: Colors.green,
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _buildCard(
-              title: 'Méthodes de paiement',
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.payment, color: Colors.green),
-                  title: const Text('Ajouter un mode de paiement'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PaymentSavePage(
-                          paymentManager: paymentManager, // Passage de l'instance
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _buildCard(
-              title: 'Préférences de livraison',
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.local_shipping, color: Colors.green),
-                  title: const Text('Modifier l\'adresse de livraison'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => livraison.UpdateAdressesLivraisonPage(),
-                      ),
-                    );
-                  },
                 ),
               ],
             ),
@@ -132,19 +102,6 @@ class ParametrePageState extends State<ParametrePage> {
                   },
                 ),
               ],
-            ),
-            const SizedBox(height: 20),
-            ListTile(
-              leading: const Icon(Icons.account_circle, color: Colors.green),
-              title: const Text('Voir le profil utilisateur'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfilPage(),
-                  ),
-                );
-              },
             ),
           ],
         ),

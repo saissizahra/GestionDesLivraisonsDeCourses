@@ -7,7 +7,7 @@ class PaymentDetailsCard extends StatelessWidget {
   final double tax;
   final double deliveryFee;
   final double totalAmount;  
-  final Map<String, dynamic> orderData; // Même format que ReviewPage
+  final Map<String, dynamic> orderData;
 
   const PaymentDetailsCard({
     super.key,
@@ -20,25 +20,23 @@ class PaymentDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       height: 260,
       width: double.infinity,
-      padding: const EdgeInsets.only(left: 15,right:15,top:15),
+      padding: const EdgeInsets.only(left: 15, right: 15, top: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Payment Details',
+            'Détails du paiement',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 15),
-          // Montant des produits
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Subtotal",
+                "Sous-total",
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -59,7 +57,7 @@ class PaymentDetailsCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Tax",
+                "Taxe",
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
@@ -80,7 +78,7 @@ class PaymentDetailsCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Delivery Fee",
+                "Frais de livraison",
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -123,7 +121,9 @@ class PaymentDetailsCard extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DeliveryTrackingPage(order: orderData,)),
+                MaterialPageRoute(
+                  builder: (context) => DeliveryTrackingPage(order: orderData),
+                ),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -131,7 +131,7 @@ class PaymentDetailsCard extends StatelessWidget {
               minimumSize: const Size(double.infinity, 50),
             ),
             child: const Text(
-              "Proceed to Delivery",
+              "Suivre la livraison",
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.white,

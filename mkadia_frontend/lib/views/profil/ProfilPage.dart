@@ -38,6 +38,13 @@ class ProfilPage extends StatelessWidget {
               ),
             ),
             centerTitle: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout, color: Colors.white,),
+                onPressed: () => _handleLogout(context, userProvider),
+              ),
+            ],
+
           ),
         ),
       ),
@@ -49,11 +56,30 @@ class ProfilPage extends StatelessWidget {
   }
 
   void _handleLogout(BuildContext context, UserProvider userProvider) {
-    userProvider.logout();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const HomeView()),
-      (route) => false,
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Déconnexion'),
+        content: const Text('Êtes-vous sûr de vouloir vous déconnecter ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // Fermer la boîte de dialogue
+              await userProvider.logout();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeView()),
+                (route) => false,
+              );
+            },
+            child: const Text('Déconnexion', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -74,21 +100,6 @@ class ProfilPage extends StatelessWidget {
           _buildHelpCard(context),
           const SizedBox(height: 20),
           _buildSettingsCard(context),
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                _handleLogout(context, userProvider);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              ),
-              child: const Text(
-                'Déconnexion',
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ),
-          ),
         ],
       ),
     );

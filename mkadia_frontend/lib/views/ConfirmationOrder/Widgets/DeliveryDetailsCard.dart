@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mkadia/provider/OrderProvider.dart';
-import 'package:provider/provider.dart'; // Pour le formatage de l'heure
+import 'package:provider/provider.dart';
 
 class DeliveryDetailsCard extends StatelessWidget {
   final Map<String, dynamic> order;
@@ -10,21 +10,18 @@ class DeliveryDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Extraction sécurisée des données
     final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-     final String orderId = order['id'].toString(); // Utiliser directement comme String
-    // Utilisez l'adresse du controller si elle existe, sinon celle de l'order
+    final String orderId = order['id'].toString();
     final String address = orderProvider.addressController.text.isNotEmpty
         ? orderProvider.addressController.text
         : order['delivery_address'] ?? 'Adresse non spécifiée';
 
-    // Formatage de l'heure sans secondes
     String formattedTime = 'Heure non estimée';
     try {
       final deliveryTime = order['delivery']?['estimated_delivery_time']?.toString();
       if (deliveryTime != null) {
         final dateTime = DateTime.parse(deliveryTime);
-        formattedTime = DateFormat('HH:mm').format(dateTime); // Format 24h sans secondes
+        formattedTime = DateFormat('HH:mm').format(dateTime);
       }
     } catch (e) {
       debugPrint('Erreur de formatage: $e');
@@ -41,7 +38,7 @@ class DeliveryDetailsCard extends StatelessWidget {
           ),
           const SizedBox(height: 5),
           Text(
-            'Commande #$orderId',
+            'Commande $orderId',
             style: const TextStyle(fontSize: 14, color: Colors.grey),
           ),
           const SizedBox(height: 15),

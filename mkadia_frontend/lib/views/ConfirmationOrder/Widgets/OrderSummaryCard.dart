@@ -7,13 +7,11 @@ class OrderSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Debug the items we're getting
-    print('Items reçus: ${items.length}');
+    print('Articles reçus: ${items.length}');
     print('OrderSummaryCard items: $items');
     
-    // Afficher un message si aucun article n'est disponible
     if (items.isEmpty) {
-      print('Aucun item à afficher');
+      print('Aucun article à afficher');
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
         padding: const EdgeInsets.all(15),
@@ -25,7 +23,7 @@ class OrderSummaryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Order',
+              'Commande',
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
@@ -49,7 +47,7 @@ class OrderSummaryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Order',
+            'Commande',
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
@@ -58,7 +56,6 @@ class OrderSummaryCard extends StatelessWidget {
             child: ListView(
               scrollDirection: Axis.horizontal, 
               children: items.map((item) {
-                // Get image URL from multiple possible fields
                 final imageUrl = item['image_url'] ?? item['image'] ?? 
                   'https://via.placeholder.com/60?text=No+Image';
                 

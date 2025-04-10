@@ -19,9 +19,9 @@ class PaymentPage extends StatelessWidget {
 
   Provider.of<CartProvider>(context);
   final orderProvider = Provider.of<OrderProvider>(context);
-  final order = orderProvider.currentOrder;
+  final temporaryOrder = orderProvider.temporaryOrder;
 
-    if (order == null) {
+    if (temporaryOrder == null) {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Paiement'),
@@ -36,7 +36,7 @@ class PaymentPage extends StatelessWidget {
 
 
     // Accéder aux éléments de la commande en tant que Map
-    final items = order['items'] as List<dynamic>;
+    final items = temporaryOrder['items'] as List<dynamic>;
     final double totalProducts = double.parse(
       (items.fold(0.0, (sum, item) => sum + (double.parse(item['price'].toString()) * item['quantity']))).toStringAsFixed(2)
     );    
@@ -111,7 +111,6 @@ class PaymentPage extends StatelessWidget {
               tax: tax,
               deliveryFee: deliveryFee,
               totalAmount: totalAmount,
-              paymentManager: paymentManager,
             ),
           ],
         ),

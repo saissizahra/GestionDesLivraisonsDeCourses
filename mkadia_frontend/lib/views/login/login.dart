@@ -18,14 +18,14 @@ class LoginScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(30),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  height: 150,
-                  width: 150,
+                  height: 130,
+                  width: 130,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -37,7 +37,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 Text(
                   'Mkadia',
                   style: TextStyle(
@@ -63,14 +63,14 @@ class LoginScreen extends StatelessWidget {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    labelText: 'Mot de Passe',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                     prefixIcon: const Icon(Icons.lock),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 9),
                 Align(
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
@@ -81,7 +81,7 @@ class LoginScreen extends StatelessWidget {
                       );
                     },
                     child: const Text(
-                      "Forgot my password",
+                      "Mot de passe oublié",
                       style: TextStyle(
                         color: Colors.black54,
                         fontWeight: FontWeight.w500,
@@ -156,37 +156,7 @@ class LoginScreen extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 20),
-                Column(
-                  children: [
-                    OutlinedButton.icon(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        side: BorderSide(color: TColor.primaryColor),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      icon: Icon(Icons.account_circle, color: TColor.primaryColor),
-                      label: const Text('Connect with Google'),
-                    ),
-                    const SizedBox(height: 10),
-                    OutlinedButton.icon(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        side: BorderSide(color: TColor.primaryColor),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      icon: Icon(Icons.facebook, color: Colors.blue[900]),
-                      label: const Text('Connect with Facebook'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 60),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(

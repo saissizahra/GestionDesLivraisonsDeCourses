@@ -65,7 +65,7 @@ Future<void> fetchData() async {
                 automaticallyImplyLeading: false,
                 backgroundColor: TColor.primaryColor,
                 elevation: 0,
-                toolbarHeight: 160,
+                toolbarHeight: 120,
                 title: const SearchLoc(),
               ),
             ),
@@ -158,7 +158,7 @@ Future<void> fetchData() async {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        "Popular products",
+                        "Produits populaires",
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.w800,

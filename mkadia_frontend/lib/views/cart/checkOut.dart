@@ -3,6 +3,7 @@ import 'package:mkadia/common/color_extension.dart';
 import 'package:mkadia/provider/OrderProvider.dart';
 import 'package:mkadia/provider/PayementManager.dart';
 import 'package:mkadia/provider/cartProvider.dart';
+import 'package:mkadia/services/OrderApiService.dart';
 import 'package:mkadia/views/payement/PaymentPage.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +41,7 @@ class CheckoutBox extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Subtotal",
+                "Sous-total",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -81,46 +82,25 @@ class CheckoutBox extends StatelessWidget {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
+              // 1. Récupérer les providers nécessaires
               final cartProvider = Provider.of<CartProvider>(context, listen: false);
-              final orderProvider = Provider.of<OrderProvider>(context, listen: false);
               final paymentManager = Provider.of<PaymentManager>(context, listen: false);
+              final orderProvider = Provider.of<OrderProvider>(context, listen: false);
               
-              // Créer une liste d'articles de commande sous forme de Map
-              final List<Map<String, dynamic>> orderItems = cartProvider.cart.map((item) {
-                return {
-                  'product_id': item['id'].toString(),
-                  'name': item['name'] ?? 'Nom non disponible',
-                  'price': double.parse(item['price'].toString()),
-                  'quantity': item['quantity'],
-                  'total': double.parse(item['price'].toString()) * item['quantity'],
-                };
-              }).toList();
-
-              // Créer une nouvelle commande sous forme de Map
-              final order = {
-                'id': 'ORDER_${DateTime.now().millisecondsSinceEpoch}',
-                'items': orderItems,
-                'total_amount': cartProvider.totalPrice(),
-                'order_date': DateTime.now().toIso8601String(),
-                'delivery': {
-                  'id': "DL002",
-                  'order_id': "ORD124",
-                  'status': 'preparing', // Utiliser une string au lieu d'une enum
-                  'estimated_delivery_time': DateTime.now().add(const Duration(hours: 3)).toIso8601String(),
-                  'driver': {
-                    'id': 1,
-                    'name': 'Nom du livreur',
-                    'phone': '0600000000',
-                  },
-                  'address': "456 Avenue des Tests, Ville",
-                  'notes': "Call upon arrival.",
-                },
+              // 2. Préparer les données temporaires pour la page de paiement
+              final orderData = {
+                'items': cartProvider.cart,
+                'subtotal': cartProvider.totalPrice(),
+                'tax': 0.1 * cartProvider.totalPrice(),
+                'delivery_fee': 10.0,
+                'total_amount': cartProvider.totalPrice() * 1.1 + 10.0,
+                'delivery_address': '', // À remplir dans la page de paiement
               };
-
-              // Définir la commande dans OrderProvider
-              orderProvider.setOrder(order);
-
-              // Naviguer vers la page de paiement
+              
+              // 3. Enregistrer la commande temporaire
+              orderProvider.setTemporaryOrder(orderData);
+              
+              // 4. Naviguer vers la page de paiement
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -136,7 +116,7 @@ class CheckoutBox extends StatelessWidget {
               minimumSize: const Size(double.infinity, 55),
             ),
             child: const Text(
-              "Check out",
+              "Paiement",
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.white,

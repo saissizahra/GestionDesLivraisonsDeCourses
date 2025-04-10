@@ -11,16 +11,15 @@ class OrderConfirmationPage extends StatelessWidget {
   final Map<String, dynamic>? order;
 
   const OrderConfirmationPage({super.key, this.order});
+
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
     final orderProvider = Provider.of<OrderProvider>(context);
-    final order = orderProvider.currentOrder;
-
+    final displayedOrder = order ?? orderProvider.currentOrder;
     final itemsToDisplay = cartProvider.confirmedItems;
 
-    // Si aucune commande n'existe
-    if (order == null && itemsToDisplay.isEmpty) {
+    if (displayedOrder == null && itemsToDisplay.isEmpty) {
       return Scaffold(
         backgroundColor: Colors.white, 
         appBar: PreferredSize(
@@ -35,7 +34,7 @@ class OrderConfirmationPage extends StatelessWidget {
               backgroundColor: TColor.primaryText,
               elevation: 0,
               title: Text(
-                "Order detail",
+                "Détails de la commande",
                 style: TextStyle(
                   color: TColor.primary,
                   fontSize: 22,
@@ -70,8 +69,6 @@ class OrderConfirmationPage extends StatelessWidget {
       );
     }
 
-    // *Si une commande existe
-    
     final double totalProducts = double.parse(
       (itemsToDisplay.fold(0.0, (sum, item) => sum + (double.parse(item['price'].toString()) * item['quantity']))).toStringAsFixed(2)
     );    
@@ -95,7 +92,7 @@ class OrderConfirmationPage extends StatelessWidget {
             backgroundColor: TColor.primaryText,
             elevation: 0,
             title: Text(
-              "Order detail",
+              "Détails de la commande",
               style: TextStyle(
                 color: TColor.primary,
                 fontSize: 22,
@@ -111,11 +108,11 @@ class OrderConfirmationPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (order != null) DeliveryDetailsCard(order: order), 
-            const SizedBox(height: 20,), 
+            if (displayedOrder != null) DeliveryDetailsCard(order: displayedOrder),
+            const SizedBox(height: 20),
             OrderSummaryCard(items: itemsToDisplay),
             PaymentDetailsCard(  
-              orderData: orderProvider.currentOrder ?? {'items': itemsToDisplay},
+              orderData: displayedOrder ?? {'items': itemsToDisplay},
               totalProducts: totalProducts,
               tax: tax,
               deliveryFee: deliveryFee,

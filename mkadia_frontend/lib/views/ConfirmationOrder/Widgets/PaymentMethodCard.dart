@@ -7,7 +7,6 @@ class PaymentMethodCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-      
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

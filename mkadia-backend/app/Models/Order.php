@@ -14,8 +14,15 @@ class Order extends Model
         'driver_id',
         'total_amount',
         'order_date',
-        'delivery_address', 
+        'delivery_address',
         'order_status',
+        'estimated_delivery_time',
+    ];
+
+    protected $dates = [
+        'order_date',
+        'created_at',
+        'updated_at',
         'estimated_delivery_time',
     ];
 
@@ -24,7 +31,6 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Relation avec le livreur
     public function driver()
     {
         return $this->belongsTo(User::class, 'driver_id');
@@ -34,5 +40,4 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
-
 }

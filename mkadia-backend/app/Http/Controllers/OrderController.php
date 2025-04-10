@@ -262,4 +262,44 @@ class OrderController extends Controller
             
         return response()->json($orders);
     }
+
+    public function confirmDelivery($orderId)
+    {
+        try {
+            $order = Order::findOrFail($orderId);
+    
+            // Validation supplémentaire
+            if ($order->order_status !== 'delivered') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La commande doit être en statut "delivered" avant confirmation'
+                ], 400);
+            }
+    
+            DB::beginTransaction();
+    
+            $order->update(['order_status' => 'completed']);
+            
+            // Ici vous pouvez ajouter d'autres logiques métier
+            // Ex: notifier le client, enregistrer des statistiques, etc.
+    
+            DB::commit();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Livraison confirmée avec succès',
+                'order' => $order->load(['user', 'items.product'])
+            ]);
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Erreur confirmation livraison: " . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la confirmation',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

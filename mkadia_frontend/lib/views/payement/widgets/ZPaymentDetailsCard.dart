@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mkadia/common/color_extension.dart';
 import 'package:mkadia/provider/OrderProvider.dart';
-
-import 'package:mkadia/provider/PayementManager.dart';
 import 'package:mkadia/provider/cartProvider.dart';
 import 'package:mkadia/services/api_service.dart';
 import 'package:mkadia/views/ConfirmationOrder/OrderConfirmationPage.dart';
 import 'package:mkadia/views/home/widget/navbar.dart';
-
 import 'package:provider/provider.dart';
 
 class ZPaymentDetailsCard extends StatefulWidget {
@@ -15,7 +12,6 @@ class ZPaymentDetailsCard extends StatefulWidget {
   final double tax;
   final double deliveryFee;
   final double totalAmount;
-  final PaymentManager paymentManager;
 
   const ZPaymentDetailsCard({
     super.key,
@@ -23,7 +19,6 @@ class ZPaymentDetailsCard extends StatefulWidget {
     required this.tax,
     required this.deliveryFee,
     required this.totalAmount,
-    required this.paymentManager,
   });
 
   @override
@@ -43,10 +38,10 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
 
   @override
   Widget build(BuildContext context) {
-        final orderProvider = Provider.of<OrderProvider>(context); // <-- Ajoutez cette ligne
+    final orderProvider = Provider.of<OrderProvider>(context);
 
     return Container(
-      height: 415, // Ajuster la hauteur pour accommoder le champ d'adresse
+      height: 415,
       width: double.infinity,
       padding: const EdgeInsets.only(left: 15, right: 15, top: 15),
       child: Column(
@@ -58,9 +53,7 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
           ),
           const SizedBox(height: 15),
 
-
-
-          // Ajout du champ pour le code promo
+          // Champ pour le code promo
           Row(
             children: [
               Expanded(
@@ -93,9 +86,6 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
               const SizedBox(width: 10),
               TextButton(
                 onPressed: () async {
-                  // Réinitialiser les frais de livraison à la valeur par défaut
-                  widget.paymentManager.updateDeliveryFee(10);
-
                   // Valider et appliquer le code promo
                   final response = await ApiService.verifyPromoCode(_promoCode);
                   if (response['status'] == true) {
@@ -105,35 +95,22 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
                     );
                     if (applyResponse['status'] == true) {
                       setState(() {
-                        // Convertir les valeurs en double
                         _discount = double.parse(applyResponse['discount'].toString());
-
-                        // Mettre à jour les frais de livraison si le code promo est de type free_shipping
-                        if (applyResponse['promotion']['type'] == 'free_shipping') {
-                          widget.paymentManager.updateDeliveryFee(0); // Mettre à jour les frais de livraison à 0
-                        }
-
-                        // Recalculer le montant total
-                        _finalTotal = widget.totalProducts + widget.tax + widget.paymentManager.deliveryFee - _discount;
+                        _finalTotal = widget.totalProducts + widget.tax + widget.deliveryFee - _discount;
                       });
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
-                              'Promo code applied! Discount: $_discount MAD'),
+                          content: Text('Promo code applied! Discount: $_discount MAD'),
                         ),
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(applyResponse['message']),
-                        ),
+                        SnackBar(content: Text(applyResponse['message'])),
                       );
                     }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(response['message']),
-                      ),
+                      SnackBar(content: Text(response['message'])),
                     );
                   }
                 },
@@ -157,7 +134,6 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
           ),
           const SizedBox(height: 15),
 
-          // Afficher la réduction appliquée
           if (_discount > 0)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -236,7 +212,7 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
                 ),
               ),
               Text(
-                "${widget.paymentManager.deliveryFee} MAD",
+                "${widget.deliveryFee} MAD",
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
@@ -271,14 +247,12 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
             onPressed: () {
               final orderProvider = Provider.of<OrderProvider>(context, listen: false);
               
-              // Vérifiez le bon contrôleur
               if (orderProvider.addressController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Veuillez entrer une adresse de livraison')),
                 );
                 return;
               }
-              widget.paymentManager.savePaymentInfo(context);
               _placeOrder(context);
             },
             style: ElevatedButton.styleFrom(
@@ -286,7 +260,7 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
               minimumSize: const Size(double.infinity, 50),
             ),
             child: const Text(
-              "Confirmer et Payer",
+              "Confirmer la commande",
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.white,
@@ -302,13 +276,15 @@ class _ZPaymentDetailsCardState extends State<ZPaymentDetailsCard> {
 Future<void> _placeOrder(BuildContext context) async {
   final cartProvider = Provider.of<CartProvider>(context, listen: false);
   final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+  
   try {
     if (orderProvider.addressController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Veuillez entrer une adresse valide')),
       );
-    return;
+      return;
     }
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -323,18 +299,14 @@ Future<void> _placeOrder(BuildContext context) async {
       orderProvider.addressController.text, 
     );
 
-    // Vérifiez explicitement le succès
-    if (orderResponse['success'] != true) {
-      throw Exception('Échec de la création de commande: ${orderResponse['message']}');
-    }
-
+    debugPrint('Commande créée avec ID: ${orderResponse['id']}');
 
     if (context.mounted) {
       Navigator.of(context).pop();
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const BottomNavBar(),
+          builder: (context) =>const BottomNavBar(),
         ),
       );
     }
